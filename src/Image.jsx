@@ -149,76 +149,144 @@ const ImageEditor = () => {
     };
     reader.readAsDataURL(file);
   };
+  const cropRectRef = useRef(null);
+  const isDrawing = useRef(false);
+  const startX = useRef(0);
+  const startY = useRef(0);
 
-  const applyFilter = (filterType) => {
-    if (!canvas || !canvas.getActiveObject()) return;
+  const handleCropMouseDown = (opt) => {
+    const pointer = canvas.getPointer(opt.e);
+    startX.current = pointer.x;
+    startY.current = pointer.y;
+    isDrawing.current = true;
 
-    const activeObject = canvas.getActiveObject();
+    cropRectRef.current = new fabric.Rect({
+      left: startX.current,
+      top: startY.current,
+      width: 0,
+      height: 0,
+      fill: "rgba(0, 0, 0, 0.3)",
+      stroke: "#666",
+      strokeWidth: 1,
+      selectable: false,
+      evented: false,
+    });
 
-    // Remove existing filters of the same type
-    activeObject.filters =
-      activeObject.filters?.filter((f) => !f.type.includes(filterType)) || [];
-
-    if (filterType === "blur") {
-      activeObject.filters.push(
-        new fabric.Image.filters.Blur({
-          blur: filterValue / 10,
-        })
-      );
-    } else if (filterType === "opacity") {
-      activeObject.opacity = filterValue / 100;
-    } else if (filterType === "contrast") {
-      activeObject.filters.push(
-        new fabric.Image.filters.Contrast({
-          contrast: filterValue / 50,
-        })
-      );
-    }
-
-    activeObject.applyFilters();
-    canvas.renderAll();
-    saveCanvasState(canvas);
+    canvas.add(cropRectRef.current);
   };
 
-  const startCropping = () => {
-    if (!canvas) return;
-    setActiveTool("crop");
-    canvas.selection = true;
-    canvas.defaultCursor = "crosshair";
-    canvas.forEachObject((obj) => (obj.selectable = false));
+  const handleCropMouseMove = (opt) => {
+    if (!isDrawing.current || !cropRectRef.current) return;
+
+    const pointer = canvas.getPointer(opt.e);
+    const image = canvas.getObjects().find((obj) => obj.type === "image");
+
+    if (!image) return;
+
+    // Limit pointer to image bounds
+    const imageBounds = {
+      left: image.left - (image.width * image.scaleX) / 2,
+      right: image.left + (image.width * image.scaleX) / 2,
+      top: image.top - (image.height * image.scaleY) / 2,
+      bottom: image.top + (image.height * image.scaleY) / 2,
+    };
+
+    const x = Math.max(
+      imageBounds.left,
+      Math.min(pointer.x, imageBounds.right)
+    );
+    const y = Math.max(
+      imageBounds.top,
+      Math.min(pointer.y, imageBounds.bottom)
+    );
+
+    const width = x - startX.current;
+    const height = y - startY.current;
+
+    cropRectRef.current.set({
+      width: Math.abs(width),
+      height: Math.abs(height),
+      left: width < 0 ? x : startX.current,
+      top: height < 0 ? y : startY.current,
+    });
+
+    canvas.renderAll();
+  };
+
+  const handleCropMouseUp = () => {
+    isDrawing.current = false;
   };
 
   const applyCrop = () => {
-    if (!canvas || activeTool !== "crop") return;
+    if (!canvas || activeTool !== "crop" || !cropRectRef.current) return;
 
-    const activeObject = canvas.getActiveObject();
-    if (!activeObject) return;
+    const image = canvas.getObjects().find((obj) => obj.type === "image");
+    if (!image) return;
 
-    const selection = canvas.getActiveObject();
-    if (selection.type !== "rect") return;
+    const cropRect = cropRectRef.current;
 
-    const croppedImage = new fabric.Image(activeObject.getElement(), {
-      left: selection.left,
-      top: selection.top,
-      width: selection.width,
-      height: selection.height,
-      cropX: selection.left - activeObject.left,
-      cropY: selection.top - activeObject.top,
+    // Calculate the crop coordinates relative to the image
+    const imageLeft = image.left - (image.width * image.scaleX) / 2;
+    const imageTop = image.top - (image.height * image.scaleY) / 2;
+
+    const cropX = (cropRect.left - imageLeft) / image.scaleX;
+    const cropY = (cropRect.top - imageTop) / image.scaleY;
+    const cropWidth = cropRect.width / image.scaleX;
+    const cropHeight = cropRect.height / image.scaleY;
+
+    // Create a new image with the cropped dimensions
+    const cropped = new fabric.Image(image.getElement(), {
+      left: cropRect.left + cropRect.width / 2,
+      top: cropRect.top + cropRect.height / 2,
+      originX: "center",
+      originY: "center",
+      scaleX: image.scaleX,
+      scaleY: image.scaleY,
+      angle: image.angle,
+      cropX: cropX,
+      cropY: cropY,
+      width: cropWidth,
+      height: cropHeight,
       selectable: true,
       id: `image-${Date.now()}`,
       name: "Cropped Image",
     });
 
-    canvas.remove(activeObject);
-    canvas.remove(selection);
-    canvas.add(croppedImage);
-    canvas.setActiveObject(croppedImage);
+    canvas.remove(image);
+    canvas.remove(cropRect);
+    cropRectRef.current = null;
+
+    canvas.add(cropped);
+    canvas.setActiveObject(cropped);
     canvas.renderAll();
+
     setActiveTool(null);
     canvas.defaultCursor = "default";
     canvas.forEachObject((obj) => (obj.selectable = true));
+
+    canvas.off("mouse:down", handleCropMouseDown);
+    canvas.off("mouse:move", handleCropMouseMove);
+    canvas.off("mouse:up", handleCropMouseUp);
+
     saveCanvasState(canvas);
   };
+
+  const startCropping = () => {
+    if (!canvas) return;
+
+    setActiveTool("crop");
+    canvas.selection = false;
+    canvas.defaultCursor = "crosshair";
+    canvas.discardActiveObject();
+    canvas.renderAll();
+
+    canvas.forEachObject((obj) => (obj.selectable = false));
+
+    canvas.on("mouse:down", handleCropMouseDown);
+    canvas.on("mouse:move", handleCropMouseMove);
+    canvas.on("mouse:up", handleCropMouseUp);
+  };
+
   const [isRemovingBg, setIsRemovingBg] = useState(false);
 
   // async function generateDALLEImage(prompt) {
@@ -246,10 +314,6 @@ const ImageEditor = () => {
   //   generateDALLEImage("cat hugs a dog");
   // }, []);
 
-  const [image, setImage] = useState(null);
-
-  
-
   const removeBackground = async () => {
     if (!canvas || !canvas.getActiveObject()) {
       alert("Please select an image first");
@@ -268,22 +332,48 @@ const ImageEditor = () => {
       // Get the image source
       const imageSrc = activeObject.getSrc();
 
-      // Process the image using the correct exported function
+      // Remove background
       const blob = await imglyBackgroundRemoval.removeBackground(imageSrc);
       const processedUrl = URL.createObjectURL(blob);
       console.log(processedUrl);
 
       // Replace the image with the processed one
       fabric.Image.fromURL(processedUrl, (img) => {
+        // Preserve all relevant properties
         img.set({
           left: activeObject.left,
           top: activeObject.top,
           scaleX: activeObject.scaleX,
           scaleY: activeObject.scaleY,
           angle: activeObject.angle,
+          originX: activeObject.originX,
+          originY: activeObject.originY,
+          flipX: activeObject.flipX,
+          flipY: activeObject.flipY,
+          skewX: activeObject.skewX,
+          skewY: activeObject.skewY,
+          opacity: activeObject.opacity,
+          shadow: activeObject.shadow,
           selectable: true,
           id: `image-${Date.now()}`,
           name: "BG Removed Image",
+        });
+
+        // If the original had filters, copy and apply them
+        if (activeObject.filters?.length) {
+          img.filters = [...activeObject.filters];
+          img.applyFilters();
+        }
+
+        // If the original had clipPath, copy it
+        if (activeObject.clipPath) {
+          img.clipPath = activeObject.clipPath;
+        }
+
+        // Optional: keep same width/height (if needed)
+        img.set({
+          width: activeObject.width,
+          height: activeObject.height,
         });
 
         canvas.remove(activeObject);
@@ -346,21 +436,85 @@ const ImageEditor = () => {
   const handleCanvasObjectModified = () => {
     saveCanvasState(canvas);
   };
-
   const downloadImage = () => {
     if (!canvas) return;
 
-    const dataURL = canvas.toDataURL({
-      format: "png",
-      quality: 1,
-    });
+    // Create a temporary image to ensure the canvas is fully rendered
+    const tempImg = new Image();
+    tempImg.crossOrigin = "anonymous";
+    tempImg.src = canvas.toDataURL("image/png");
 
-    const link = document.createElement("a");
-    link.download = "edited-image.png";
-    link.href = dataURL;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    tempImg.onload = () => {
+      // Create a temporary canvas to analyze the image
+      const tempCanvas = document.createElement("canvas");
+      tempCanvas.width = canvas.width;
+      tempCanvas.height = canvas.height;
+      const tempCtx = tempCanvas.getContext("2d");
+      tempCtx.drawImage(tempImg, 0, 0);
+
+      // Get the pixel data
+      const pixels = tempCtx.getImageData(
+        0,
+        0,
+        tempCanvas.width,
+        tempCanvas.height
+      ).data;
+
+      // Calculate the bounding box of non-transparent pixels
+      let minX = tempCanvas.width,
+        minY = tempCanvas.height,
+        maxX = 0,
+        maxY = 0;
+
+      for (let y = 0; y < tempCanvas.height; y++) {
+        for (let x = 0; x < tempCanvas.width; x++) {
+          const alpha = pixels[(y * tempCanvas.width + x) * 4 + 3];
+          if (alpha > 0) {
+            minX = Math.min(minX, x);
+            minY = Math.min(minY, y);
+            maxX = Math.max(maxX, x);
+            maxY = Math.max(maxY, y);
+          }
+        }
+      }
+
+      // Calculate width and height of the content
+      const width = maxX - minX + 1;
+      const height = maxY - minY + 1;
+
+      // Create the final trimmed canvas
+      const trimmedCanvas = document.createElement("canvas");
+      trimmedCanvas.width = width;
+      trimmedCanvas.height = height;
+      const trimmedCtx = trimmedCanvas.getContext("2d");
+
+      // Draw only the content area from the original image
+      trimmedCtx.drawImage(
+        tempImg,
+        minX,
+        minY,
+        width,
+        height, // source rectangle
+        0,
+        0,
+        width,
+        height // destination rectangle
+      );
+
+      // Export the trimmed canvas
+      const dataURL = trimmedCanvas.toDataURL("image/png");
+
+      const link = document.createElement("a");
+      link.download = `edited-image-${Date.now()}.png`;
+      link.href = dataURL;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+
+    tempImg.onerror = () => {
+      console.error("Error loading temporary image");
+    };
   };
 
   // Layer management functions
@@ -421,6 +575,35 @@ const ImageEditor = () => {
     saveCanvasState(canvas);
   };
 
+  const applyFilter = (filterType) => {
+    if (!canvas || !canvas.getActiveObject()) return;
+
+    const activeObject = canvas.getActiveObject();
+
+    // Remove existing filters of the same type
+    activeObject.filters =
+      activeObject.filters?.filter((f) => !f.type.includes(filterType)) || [];
+
+    if (filterType === "blur") {
+      activeObject.filters.push(
+        new fabric.Image.filters.Blur({
+          blur: filterValue / 10,
+        })
+      );
+    } else if (filterType === "opacity") {
+      activeObject.opacity = filterValue / 100;
+    } else if (filterType === "contrast") {
+      activeObject.filters.push(
+        new fabric.Image.filters.Contrast({
+          contrast: filterValue / 50,
+        })
+      );
+    }
+
+    activeObject.applyFilters();
+    canvas.renderAll();
+    saveCanvasState(canvas);
+  };
   useEffect(() => {
     if (!canvas) return;
 
@@ -432,7 +615,6 @@ const ImageEditor = () => {
 
   return (
     <div className="image-editor">
-      {image ? <img src={image} alt="" /> : null}
       <div className="toolbar">
         <button onClick={() => fileInputRef.current.click()}>
           Replace
@@ -455,6 +637,7 @@ const ImageEditor = () => {
         >
           <FaCrop /> Crop
         </button>
+            <button onClick={applyCrop}>Apply Crop</button>
 
         <button onClick={removeBackground} disabled={isRemovingBg}>
           <FaMagic /> {isRemovingBg ? "Processing..." : "BG Remover"}
@@ -505,12 +688,12 @@ const ImageEditor = () => {
           <MdBlurOn /> Blur
         </button>
 
-        <button
+        {/* <button
           onClick={startErasing}
           className={activeTool === "erase" ? "active" : ""}
         >
           <FaEraser /> Erase
-        </button>
+        </button> */}
 
         <button onClick={undo} disabled={historyIndex.current <= 0}>
           <FaUndo /> Undo
@@ -522,11 +705,6 @@ const ImageEditor = () => {
         >
           <FaRedo /> Redo
         </button>
-
-        <button onClick={downloadImage}>
-          <FaDownload /> Download
-        </button>
-
         <button
           onClick={() => setShowLayersPanel(!showLayersPanel)}
           className={showLayersPanel ? "active" : ""}
@@ -536,6 +714,9 @@ const ImageEditor = () => {
 
         <button onClick={addNewLayer}>
           <FaPlus /> Add Layer
+        </button>
+            <button onClick={downloadImage}>
+          <FaDownload /> Download
         </button>
       </div>
 
@@ -599,6 +780,7 @@ const ImageEditor = () => {
 
       <div className="canvas-container">
         <canvas
+        className={isRemovingBg ? "isRemovingBg" :''}
           ref={canvasRef}
           width={800}
           height={600}

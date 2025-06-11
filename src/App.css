@@ -134,3 +134,23 @@ button.active {
 .layer-visibility {
   margin-right: 5px;
 }
+.color-picker-container{
+  position: relative;
+}
+.color-picker-popup{
+  position: absolute;
+  top: 100%;
+  z-index: 5;
+}
+.isRemovingBg{
+  opacity: 1;
+  animation: isRemovingBg 1.5s linear forwards infinite;
+}
+@keyframes isRemovingBg {
+  50%{
+    opacity: .5;
+  }
+  100%{
+    opacity: 1;
+  }
+}

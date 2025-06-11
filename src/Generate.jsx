@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useState } from "react";
 
 function ImageGenerator() {
@@ -7,53 +6,97 @@ function ImageGenerator() {
   const [prompt, setPrompt] = useState("");
 
   const generateImage = async () => {
+    if (!prompt.trim()) return;
+
     setLoading(true);
     try {
-      const payload = {
-        prompt: prompt || "Lighthouse on a cliff overlooking the ocean",
-        output_format: "webp",
-      };
+      const response = await fetch("https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-3.5-large", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer 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", // Not required for public usage (limited)
+        },
+        body: JSON.stringify({ inputs: prompt }),
+      });
 
-      // Create FormData for browser compatibility
-      const formData = new FormData();
-      for (const key in payload) {
-        formData.append(key, payload[key]);
-      }
+      console.log(response);
+      
 
-      const response = await axios.post(
-        "https://api.stability.ai/v2beta/stable-image/generate/ultra",
-        formData,
-        {
-          responseType: "blob", // Changed from arraybuffer for browser
-          headers: {
-            Authorization: `Bearer sk-8DRG8j5wEPMywn5VSZBsmDT5mMRoJcN44fVyRPyVUAtjRKRh`, // Replace with your key
-            Accept: "image/*",
-          },
-        }
-      );
-
-      const imageUrl = URL.createObjectURL(response.data);
-      setImage(imageUrl);
-    } catch (error) {
-      console.error("Generation failed:", error);
-      alert(`Error: ${error.response?.data?.message || error.message}`);
+      const blob = await response.blob();
+      const imgUrl = URL.createObjectURL(blob);
+      setImage(imgUrl);
+    } catch (err) {
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div>
-      <input
-        type="text"
-        value={prompt}
-        onChange={(e) => setPrompt(e.target.value)}
-        placeholder="Describe your image..."
-      />
-      <button onClick={generateImage} disabled={loading}>
-        {loading ? "Generating..." : "Generate Image"}
-      </button>
-      {image && <img src={image} alt="Generated content" style={{ maxWidth: "100%" }} />}
+    <div style={{ maxWidth: "800px", margin: "0 auto", padding: "20px" }}>
+      <h1>Image Generator (via Hugging Face)</h1>
+      <div style={{ marginBottom: "20px" }}>
+        <input
+          type="text"
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          placeholder="Describe your image..."
+          style={{
+            width: "70%",
+            padding: "10px",
+            fontSize: "16px",
+            marginRight: "10px",
+          }}
+          disabled={loading}
+        />
+        <button
+          onClick={generateImage}
+          disabled={loading}
+          style={{
+            padding: "10px 20px",
+            backgroundColor: loading ? "#cccccc" : "#4CAF50",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            cursor: loading ? "wait" : "pointer",
+            fontSize: "16px",
+          }}
+        >
+          {loading ? "Generating..." : "Generate Image"}
+        </button>
+      </div>
+
+      {image && (
+        <div style={{ marginTop: "20px", textAlign: "center" }}>
+          <img
+            src={image}
+            alt="Generated"
+            style={{
+              maxWidth: "100%",
+              maxHeight: "512px",
+              border: "1px solid #ddd",
+              borderRadius: "8px",
+              boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+            }}
+          />
+          <div style={{ marginTop: "10px" }}>
+            <a
+              href={image}
+              download={`generated-${Date.now()}.png`}
+              style={{
+                padding: "8px 16px",
+                backgroundColor: "#2196F3",
+                color: "white",
+                textDecoration: "none",
+                borderRadius: "4px",
+                fontSize: "14px",
+              }}
+            >
+              Download Image
+            </a>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
