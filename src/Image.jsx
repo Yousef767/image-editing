@@ -623,7 +623,7 @@ const ImageEditor = () => {
             ref={fileInputRef}
             onChange={handleFileUpload}
             style={{ display: "none" }}
-            accept="image/*"
+            accept="image/png,image/jpg,image/jpeg"
           />
         </button>
 
