@@ -71,9 +71,7 @@ button {
   cursor: pointer;
 }
 
-button:hover {
-  background: #e0e0e0;
-}
+
 
 button.active {
   background: #007bff;
