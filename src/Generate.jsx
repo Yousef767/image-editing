@@ -14,7 +14,7 @@ function ImageGenerator() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": "Bearer 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", // Not required for public usage (limited)
+          // "Authorization": "Bearer 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", // Not required for public usage (limited)
         },
         body: JSON.stringify({ inputs: prompt }),
       });
