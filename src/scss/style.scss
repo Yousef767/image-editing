@@ -816,7 +816,7 @@ button.active {
 }
 .heroImg {
   position: absolute;
-  bottom: 27px;
+  bottom: 25px;
   right: 0;
   width: 700px;
   z-index: 2;
@@ -840,7 +840,8 @@ button.active {
 }
 @media (max-width: 900px) {
   .heroImg {
-    display: none;
+    width: 80% !important;
+    bottom: 20px;
   }
   .hero {
     .box {
