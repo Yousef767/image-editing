@@ -1,3 +1,4 @@
+import GoTop from "../fragments/GoTop";
 import Counters from "../fragments/home/Counters";
 import Features from "../fragments/home/Features";
 import Hero from "../fragments/home/Hero";
@@ -7,6 +8,7 @@ import WhatYouSearchFor from "../fragments/home/WhatYouSearchFor";
 function Home() {
   return (
     <>
+      <GoTop/>
       <Hero />
       <Counters />
       <Features/>

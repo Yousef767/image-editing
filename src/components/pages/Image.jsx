@@ -616,7 +616,7 @@ const ImageEditor = () => {
   return (
     <div className="image-editor">
       <div className="toolbar">
-        <button onClick={() => fileInputRef.current.click()}>
+        <button className="button" onClick={() => fileInputRef.current.click()}>
           Replace
           <input
             type="file"
@@ -627,23 +627,29 @@ const ImageEditor = () => {
           />
         </button>
 
-        <button onClick={deleteSelected}>
+        <button className="button" onClick={deleteSelected}>
           <FaTrash /> Delete
         </button>
 
         <button
           onClick={activeTool === "crop" ? applyCrop : startCropping}
-          className={activeTool === "crop" ? "active" : ""}
+          className={activeTool === "button crop" ? "button active" : ""}
         >
           <FaCrop /> Crop
         </button>
-            <button onClick={applyCrop}>Apply Crop</button>
+        <button className="button" onClick={applyCrop}>
+          Apply Crop
+        </button>
 
-        <button onClick={removeBackground} disabled={isRemovingBg}>
+        <button
+          className="button"
+          onClick={removeBackground}
+          disabled={isRemovingBg}
+        >
           <FaMagic /> {isRemovingBg ? "Processing..." : "BG Remover"}
         </button>
 
-        <div className="color-picker-container">
+        <div className="button color-picker-container">
           <button
             onClick={() => setShowColorPicker(!showColorPicker)}
             style={{ backgroundColor: selectedColor }}
@@ -665,7 +671,7 @@ const ImageEditor = () => {
           onClick={() => {
             setActiveTool(activeTool === "opacity" ? null : "opacity");
           }}
-          className={activeTool === "opacity" ? "active" : ""}
+          className={activeTool === "button opacity" ? "button active" : ""}
         >
           <MdOpacity /> Opacity
         </button>
@@ -674,7 +680,7 @@ const ImageEditor = () => {
           onClick={() => {
             setActiveTool(activeTool === "contrast" ? null : "contrast");
           }}
-          className={activeTool === "contrast" ? "active" : ""}
+          className={activeTool === "button contrast" ? "button active" : ""}
         >
           <MdCompare /> Contrast
         </button>
@@ -683,7 +689,7 @@ const ImageEditor = () => {
           onClick={() => {
             setActiveTool(activeTool === "blur" ? null : "blur");
           }}
-          className={activeTool === "blur" ? "active" : ""}
+          className={activeTool === "button blur" ? "button active" : ""}
         >
           <MdBlurOn /> Blur
         </button>
@@ -695,11 +701,16 @@ const ImageEditor = () => {
           <FaEraser /> Erase
         </button> */}
 
-        <button onClick={undo} disabled={historyIndex.current <= 0}>
+        <button
+          className="button"
+          onClick={undo}
+          disabled={historyIndex.current <= 0}
+        >
           <FaUndo /> Undo
         </button>
 
         <button
+          className="button"
           onClick={redo}
           disabled={historyIndex.current >= history.current.length - 1}
         >
@@ -707,15 +718,15 @@ const ImageEditor = () => {
         </button>
         <button
           onClick={() => setShowLayersPanel(!showLayersPanel)}
-          className={showLayersPanel ? "active" : ""}
+          className={showLayersPanel ? "button active" : "button"}
         >
           <FaLayerGroup /> Layers
         </button>
 
-        <button onClick={addNewLayer}>
+        <button className="button" onClick={addNewLayer}>
           <FaPlus /> Add Layer
         </button>
-            <button onClick={downloadImage}>
+        <button className="button" onClick={downloadImage}>
           <FaDownload /> Download
         </button>
       </div>
@@ -780,7 +791,7 @@ const ImageEditor = () => {
 
       <div className="canvas-container">
         <canvas
-        className={isRemovingBg ? "isRemovingBg" :''}
+          className={isRemovingBg ? "isRemovingBg" : ""}
           ref={canvasRef}
           width={800}
           height={600}

@@ -276,7 +276,7 @@ nav {
 .goTop {
   display: none;
   position: fixed;
-  bottom: 5%;
+  bottom: 20px;
   right: 20px;
   z-index: 5;
 }
@@ -301,6 +301,10 @@ nav {
 .goTop span i {
   color: #fff;
   font-size: 1.5em;
+}
+
+.goTop.show {
+  display: flex;
 }
 
 .f-s {
@@ -702,7 +706,7 @@ nav {
   justify-content: center;
 }
 
-button {
+.button {
   display: flex;
   align-items: center;
   gap: 5px;
@@ -712,7 +716,7 @@ button {
   cursor: pointer;
 }
 
-button.active {
+.button.active {
   background: #007bff;
   color: white;
 }
