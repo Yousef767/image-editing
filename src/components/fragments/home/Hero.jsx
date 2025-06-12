@@ -11,7 +11,7 @@ function Hero() {
           Start design
         </Link>
       </div>
-      <img className="heroImg" src="/hero.png" alt="" />
+      <img className="heroImg" src="/hero2.png" alt="" />
       <img className="bg" src="/bg.png" alt="" />
     </div>
   );

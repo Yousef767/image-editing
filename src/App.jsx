@@ -3,7 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./components/pages/Home";
 import Navbar from "./components/layout/Navbar";
 import NotFoundPage from "./components/pages/NotFoundPage";
-import ImageEditor from "./components/pages/Image";
+import Footer from "./components/layout/Footer";
 
 function App() {
   return (
@@ -23,6 +23,7 @@ function App() {
           }
         />
       </Routes>
+      <Footer/>
     </BrowserRouter>
   );
 }

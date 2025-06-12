@@ -1,6 +1,11 @@
 import { Link } from "react-router-dom";
 import Bubble from "../Bubble";
+import { useEffect } from "react";
+import { GlowEffect } from "../GlowEffect";
 function Pricing() {
+  useEffect(() => {
+    GlowEffect();
+  });
   return (
     <div className="bubbleInner">
       <Bubble position="top-left" />
@@ -12,7 +17,7 @@ function Pricing() {
           </h2>
         </div>
         <div className="plans">
-          <div className="plan">
+          <div className="plan glow">
             <h2>Free</h2>
             <span>For any kind of project or design work.</span>
             <h3>00.00</h3>
@@ -20,20 +25,20 @@ function Pricing() {
               Register now
             </Link>
           </div>
-          <div className="plan">
+          <div className="plan glow">
             <h2>Monthly</h2>
             <span>auto-renewing subscription</span>
-            <h3>20.99</h3>
+            <h3>19.99</h3>
             <Link to={"/"} className="btn w100">
-              Register now
+              Subscribe now
             </Link>
           </div>
-          <div className="plan">
-            <h2>Free</h2>
+          <div className="plan glow">
+            <h2>Yearly</h2>
             <span>auto-renewing subscription</span>
-            <h3>20.99</h3>
+            <h3>49.99</h3>
             <Link to={"/"} className="btn w100">
-              Register now
+              Subscribe now
             </Link>
           </div>
         </div>

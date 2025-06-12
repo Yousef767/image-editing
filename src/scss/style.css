@@ -796,7 +796,7 @@ button.active {
     opacity: 1;
   }
 }
-.linearText, .plan h3::before {
+.linearText, .media ul li a i, .plan h3::before {
   background: -webkit-linear-gradient(45deg, #090edb -15.78%, #e73dc4 102.06%);
   background-clip: text;
   -webkit-background-clip: text;
@@ -979,7 +979,7 @@ button.active {
 .bubble {
   position: absolute;
   width: 700px;
-  height: 600px;
+  height: 500px;
   background: linear-gradient(68.46deg, rgba(243, 211, 76, 0.4) 29.64%, rgba(201, 199, 250, 0.8) 47.28%, #f9d9ff 58.95%);
   opacity: 0.8;
   filter: blur(36.2px);
@@ -989,7 +989,7 @@ button.active {
 }
 @media (max-width: 900px) {
   .bubble {
-    scale: 0.8;
+    scale: 0.6;
   }
 }
 
@@ -1088,7 +1088,7 @@ button.active {
   }
 }
 .header h2 {
-  max-width: 900px;
+  width: 100%;
   font-size: 2.5rem;
   color: #939393;
   font-family: "Ahmad Hasani Fonts";
@@ -1103,6 +1103,9 @@ button.active {
 @media (max-width: 500px) {
   .header h2 {
     font-size: 1.7rem;
+  }
+  .header h2 br {
+    display: none;
   }
 }
 
@@ -1119,11 +1122,40 @@ button.active {
   width: 100%;
   text-align: center;
   font-size: 2rem;
+  text-transform: capitalize;
   padding-top: 10px;
 }
 @media (max-width: 900px) {
   .mySwiper .swiper-slide h2 {
     font-size: 1.7rem;
+  }
+}
+
+.mySwiper2 {
+  padding-bottom: 70px;
+}
+.mySwiper2 .swiper-slide img {
+  width: 100%;
+  -o-object-fit: contain;
+     object-fit: contain;
+  border-radius: 20px;
+}
+@media (max-width: 900px) {
+  .mySwiper2 .swiper-slide img {
+    border-radius: 10px;
+  }
+}
+.mySwiper2 .swiper-slide h2 {
+  width: 100%;
+  text-align: center;
+  font-size: 1.5rem;
+  padding-top: 10px;
+  color: #736fd0;
+  text-transform: capitalize;
+}
+@media (max-width: 900px) {
+  .mySwiper2 .swiper-slide h2 {
+    font-size: 1.2rem;
   }
 }
 
@@ -1177,4 +1209,253 @@ button.active {
 .plan h3::before {
   content: "$";
   font-weight: 400;
+}
+
+.contentBoxs .contentBox:nth-child(odd) {
+  flex-direction: row-reverse;
+}
+
+.contentBox {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 100px;
+  padding-bottom: 30px;
+}
+.contentBox img {
+  width: 600px;
+  -o-object-fit: contain;
+     object-fit: contain;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 10px;
+}
+.content .icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  border: 3px solid #f3d34c;
+  background-color: #fff;
+  position: relative;
+  box-shadow: 0px 0px 7px 0px rgba(65, 61, 153, 0.5);
+}
+.content .icon svg {
+  position: absolute;
+  width: 35px;
+  height: 35px;
+}
+.content h2 {
+  font-family: "Ahmad Hasani Fonts";
+  word-spacing: 10px;
+  font-size: 2rem;
+  color: #736fd0;
+}
+.content p {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  width: 100%;
+  font-weight: 600;
+  padding-bottom: 5px;
+}
+.content ul {
+  list-style: none;
+}
+.content ul li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 15px;
+  font-weight: 500;
+}
+
+@media (max-width: 1200px) {
+  .contentBox {
+    gap: 50px;
+  }
+  .contentBox img {
+    width: 400px;
+  }
+}
+@media (max-width: 999px) {
+  .contentBoxs .contentBox:nth-child(odd) {
+    flex-direction: column;
+  }
+  .contentBox {
+    flex-direction: column;
+    gap: 50px;
+  }
+  .contentBox img {
+    width: 400px;
+  }
+}
+@media (max-width: 600px) {
+  .contentBox img {
+    width: 100%;
+  }
+  .contentBox h2 {
+    font-size: 1.6rem;
+  }
+  .contentBox p {
+    font-size: 0.9rem;
+  }
+  .contentBox ul li {
+    font-size: 0.95rem;
+  }
+}
+.glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.glow::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), #ffec9c, transparent);
+  transition: background 0.1s ease, opacity 0.3s ease;
+  pointer-events: none;
+  opacity: 0;
+  z-index: -1;
+}
+
+.glow:hover::before {
+  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), #ffec9c, transparent 60%);
+}
+
+.glow.fade-in::before {
+  opacity: 1;
+}
+
+.glow.fade-out::before {
+  opacity: 0;
+}
+
+footer {
+  padding-top: 100px;
+  padding-bottom: 100px;
+  width: 100%;
+  border-radius: 0px 100px 0 0;
+  background: linear-gradient(to top, rgba(9, 14, 219, 0.5) 9.71%, rgba(120, 38, 207, 0.5) 36.99%, rgba(231, 61, 196, 0.5) 69.72%, rgba(243, 212, 78, 0.5) 107.91%), linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.2) 104.45%);
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: 70px;
+}
+
+.footerBox {
+  width: 100%;
+  gap: 20px;
+  flex-wrap: wrap;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.footerTitle h1 {
+  font-size: 3.5rem;
+  max-width: 700px;
+  color: #fff;
+  padding-bottom: 20px;
+  font-family: "Ahmad Hasani Fonts";
+  word-spacing: 10px;
+  line-height: 1.2;
+}
+
+.media h2 {
+  padding-bottom: 10px;
+  font-family: "Ahmad Hasani Fonts";
+  word-spacing: 10px;
+  color: #fff;
+  font-size: 1.8rem;
+}
+.media ul {
+  list-style: none;
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+.media ul li a {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 10px;
+}
+.media .underline {
+  width: 200px;
+  border-bottom: 1px solid #f3d34c;
+}
+.media .footerLinks {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+  padding-top: 20px;
+}
+.media .footerLinks li {
+  display: flex;
+  flex-grow: 1;
+}
+.media .footerLinks li a {
+  display: flex;
+  justify-content: left;
+  color: #fff;
+  background-color: transparent;
+  border-radius: 0;
+  width: initial;
+  height: initial;
+  flex-grow: 1;
+  width: 100%;
+  white-space: nowrap;
+  font-weight: 500;
+}
+.media .footerLinks li .active {
+  color: #f3d34c;
+}
+
+@media (max-width: 900px) {
+  footer {
+    border-radius: 0 50px 0 0;
+  }
+  .footer {
+    gap: 30px;
+  }
+  .footerBox {
+    flex-direction: column;
+  }
+  .footerTitle h1 {
+    font-size: 2.5rem;
+  }
+  .media h2 {
+    font-size: 1.5rem;
+  }
+  .media .footerLinks {
+    gap: 20px;
+  }
+}
+@media (max-width: 500px) {
+  footer {
+    padding-top: 70px;
+    padding-bottom: 70px;
+  }
+  .footerTitle h1 {
+    font-size: 2rem;
+  }
+  .media h2 {
+    font-size: 1.3rem;
+  }
 }/*# sourceMappingURL=style.css.map */
