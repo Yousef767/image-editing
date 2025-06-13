@@ -23,7 +23,7 @@ function GoTop() {
       className="goTop "
     >
       <span>
-        <i class="fa-regular fa-angle-up"></i>
+        <i className="fa-regular fa-angle-up"></i>
       </span>
     </button>
   );

@@ -80,7 +80,7 @@ function Navbar() {
             <Link to={`/login`} className="whiteBtn">
               Log in
             </Link>
-            <Link to={`/login`} className="yellowBtn">
+            <Link to={`/signup`} className="yellowBtn">
               Start for free
             </Link>
           </div>
