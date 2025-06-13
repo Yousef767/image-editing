@@ -62,23 +62,23 @@ function WhatYouSearchFor() {
           </SwiperSlide>
           <SwiperSlide>
             <img src="/media/templates/2.png" alt="" />
-            <h2>Portfolio</h2>
-          </SwiperSlide>
-          <SwiperSlide>
-            <img src="/media/templates/3.png" alt="" />
             <h2>Document</h2>
           </SwiperSlide>
           <SwiperSlide>
-            <img src="/media/templates/4.png" alt="" />
+            <img src="/media/templates/3.png" alt="" />
             <h2>Planner</h2>
           </SwiperSlide>
           <SwiperSlide>
-            <img src="/media/templates/5.png" alt="" />
+            <img src="/media/templates/4.png" alt="" />
             <h2>Poster</h2>
           </SwiperSlide>
           <SwiperSlide>
+            <img src="/media/templates/5.png" alt="" />
+            <h2>Businesscard </h2>
+          </SwiperSlide>
+          <SwiperSlide>
             <img src="/media/templates/6.png" alt="" />
-            <h2>Businesscard</h2>
+            <h2>Portfolio</h2>
           </SwiperSlide>
         </Swiper>
       </div>
