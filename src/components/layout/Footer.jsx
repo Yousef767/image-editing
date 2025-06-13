@@ -23,7 +23,7 @@ function Footer() {
             <h1>
               Ready to design? <br /> Start registration now
             </h1>
-            <Link className="btn" to={"/"}>
+            <Link className="btn" to={"/signup"}>
               Start design
             </Link>
           </div>
