@@ -1585,13 +1585,14 @@ footer {
   position: fixed;
   top: 20px;
   right: 20px;
+  border-radius: 50%;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.251);
 }
 .close img {
   width: 40px;
   height: 40px;
   -o-object-fit: contain;
      object-fit: contain;
-  filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.251));
 }
 
 .logoLink {
