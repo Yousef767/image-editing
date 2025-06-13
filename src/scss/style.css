@@ -1587,12 +1587,16 @@ footer {
   right: 20px;
   border-radius: 50%;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.251);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
 }
 .close img {
   width: 40px;
   height: 40px;
-  -o-object-fit: contain;
-     object-fit: contain;
+  -o-object-fit: cover;
+     object-fit: cover;
+  border-radius: 50%;
 }
 
 .logoLink {

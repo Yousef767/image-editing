@@ -1525,10 +1525,12 @@ footer {
   right: 20px;
   border-radius: 50%;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.251);
+  @include circle(40px);
   img {
     width: 40px;
     height: 40px;
-    object-fit: contain;
+    object-fit: cover;
+      border-radius: 50%;
   }
 }
 .logoLink {
