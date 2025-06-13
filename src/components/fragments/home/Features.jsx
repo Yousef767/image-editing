@@ -17,7 +17,7 @@ function Features() {
         <Swiper
           slidesPerView={3.5}
           spaceBetween={30}
-          freeMode={true}
+          // freeMode={true}
           grabCursor={true}
           autoplay={{
             delay: 2500,
