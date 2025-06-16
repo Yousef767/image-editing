@@ -3,29 +3,31 @@ import { Link } from "react-router-dom";
 import * as Yup from "yup";
 import { Back } from "./BackBtn";
 
-function LoginForm({ setShowForm }) {
+function SignupForm() {
   const validation = Yup.object().shape({
     email: Yup.string()
       .email("Invalid email address")
       .required("Email is required"),
-    password: Yup.string()
-      .min(6, "Password must be at least 6 characters")
-      .required("Password is required"),
   });
   return (
     <div className="wayBtns wayBtnsLogin">
       <div className="wayBox">
         <Link to={"/"} className="logoLink">
           <img className="logo" src="/logo.png" alt="" />
-          Log in
+          Forgot password
         </Link>
         <h1>
-          <Back setShowForm={setShowForm} />
+          <Link to={"/login"}>
+            <Back />
+          </Link>
           Continue with your mail
         </h1>
-        <p>Use your email and password to continue with us </p>
+        <p>
+          Please enter your email address, we will send you a link to create a
+          new password{" "}
+        </p>
         <Formik
-          initialValues={{ email: "", password: "" }}
+          initialValues={{ email: "" }}
           onSubmit={(values) => {
             console.log(values);
           }}
@@ -39,31 +41,19 @@ function LoginForm({ setShowForm }) {
                 <ErrorMessage name="email" />
               </p>
             </div>
-            <div className="input">
-              <span>Password</span>
-              <Field
-                name="password"
-                type="password"
-                placeholder="Enter your password"
-              />
-              <p>
-                <ErrorMessage name="password" />
-              </p>
-            </div>
-            <Link to={'/forgot-password'} className="forgot">
-              Forgot password ?
-            </Link>
-            <button type="submit">Continue</button>
+
+            <button type="submit">Send</button>
           </Form>
         </Formik>
-        <div className="dont">
-          Don’t have an account? <Link to={"/signup"}>Sign Up</Link>
+        <div className="note">
+          Note: If you sign-up using social media account, please make sure you
+          try to login using the same account
         </div>
       </div>
     </div>
   );
 }
 
-export default LoginForm;
+export default SignupForm;
 
 

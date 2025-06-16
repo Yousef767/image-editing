@@ -1509,7 +1509,7 @@ footer {
   text-align: center;
 }
 .wayBtns p {
-  color: #939393;
+  color: rgb(102, 102, 102);
   text-align: center;
 }
 
@@ -1658,6 +1658,7 @@ footer {
   padding: 0 20px;
   border-radius: 20px;
   color: #3e3c37 !important;
+  margin-top: 10px;
 }
 .form p {
   color: red;
@@ -1688,6 +1689,10 @@ footer {
 .dont a {
   font-weight: 500;
   color: #736fd0;
+}
+
+.dashborad {
+  display: flex;
 }
 
 .aside {
@@ -1773,4 +1778,146 @@ footer {
   -o-object-fit: cover;
      object-fit: cover;
   border-radius: 8px;
+}
+
+.container {
+  width: calc(100% - 300px);
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  min-height: 100dvh;
+}
+
+.dashboardNav {
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: center;
+}
+.dashboardNav a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.dashboardNav a:nth-child(1) {
+  color: #736fd0;
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.avatar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #736fd0;
+  font-weight: 500;
+}
+.avatar img {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
+.searchInput {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 700px;
+  width: 100%;
+  position: relative;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0px 0px 27.4px 0px rgba(0, 0, 0, 0.2);
+}
+.searchInput input {
+  border: none;
+  outline: none;
+  background-color: transparent;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  font-size: 1rem;
+  height: 43px;
+  border: 1px solid #3e3c37;
+  padding: 0 20px;
+  border-radius: 8px;
+  color: #3e3c37;
+  padding: 0 20px;
+}
+.searchInput input::-moz-placeholder {
+  color: #939393;
+}
+.searchInput input::placeholder {
+  color: #939393;
+}
+.searchInput button {
+  position: absolute;
+  right: 1px;
+  width: 44px;
+  height: 42px;
+  border-radius: 0 8px 8px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgb(255, 236, 155);
+}
+.searchInput button i {
+  color: #3e3c37;
+  font-size: 1.2rem;
+}
+
+.swiperInner {
+  width: 100%;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.swiperInner .sp {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  position: absolute;
+  bottom: -20px !important;
+  z-index: 3;
+}
+.swiperInner .sp .swiper-pagination-bullet {
+  background: rgb(212, 212, 212);
+  transition: 0.3s all ease;
+  opacity: 1;
+}
+.swiperInner .sp .swiper-pagination-bullet-active {
+  width: 20px;
+  border-radius: 8px;
+  background-color: #f3d34c;
+}
+
+.mySwiper3 {
+  padding-top: 40px !important;
+}
+.mySwiper3 .swiper-slide {
+  width: 100%;
+}
+.mySwiper3 .swiper-slide img {
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0px 0px 8px 0px rgba(40, 12, 71, 0.25);
+}
+
+.note {
+  width: 100%;
+  color: #736fd0;
+}
+
+.forgot {
+  width: 100%;
+  text-align: right;
+  color: #736fd0;
+  padding-top: 10px;
 }/*# sourceMappingURL=style.css.map */
