@@ -34,23 +34,31 @@ function LoginForm({ setShowForm }) {
           <Form className="form">
             <div className="input">
               <span>Your mail</span>
-              <Field name="email" type="email" placeholder="Write your mail" />
+              <div className="field">
+                <Field
+                  name="email"
+                  type="email"
+                  placeholder="Write your mail"
+                />
+              </div>
               <p>
                 <ErrorMessage name="email" />
               </p>
             </div>
             <div className="input">
               <span>Password</span>
-              <Field
-                name="password"
-                type="password"
-                placeholder="Enter your password"
-              />
+              <div className="field">
+                <Field
+                  name="password"
+                  type="password"
+                  placeholder="Enter your password"
+                />
+              </div>
               <p>
                 <ErrorMessage name="password" />
               </p>
             </div>
-            <Link to={'/forgot-password'} className="forgot">
+            <Link to={"/forgot-password"} className="forgot">
               Forgot password ?
             </Link>
             <button type="submit">Continue</button>
@@ -65,5 +73,3 @@ function LoginForm({ setShowForm }) {
 }
 
 export default LoginForm;
-
-

@@ -36,7 +36,13 @@ function SignupForm() {
           <Form className="form">
             <div className="input">
               <span>Your mail</span>
-              <Field name="email" type="email" placeholder="Write your mail" />
+              <div className="field">
+                <Field
+                  name="email"
+                  type="email"
+                  placeholder="Write your mail"
+                />
+              </div>
               <p>
                 <ErrorMessage name="email" />
               </p>
@@ -55,5 +61,3 @@ function SignupForm() {
 }
 
 export default SignupForm;
-
-

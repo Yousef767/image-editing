@@ -47,36 +47,48 @@ function SignupForm() {
           <Form className="form">
             <div className="input">
               <span>Your mail</span>
-              <Field name="email" type="email" placeholder="Write your mail" />
+              <div className="field">
+                <Field
+                  name="email"
+                  type="email"
+                  placeholder="Write your mail"
+                />
+              </div>
               <p>
                 <ErrorMessage name="email" />
               </p>
             </div>
             <div className="input">
               <span>Username</span>
-              <Field
-                name="username"
-                type="text"
-                placeholder="Write your username"
-              />
+              <div className="field">
+                <Field
+                  name="username"
+                  type="text"
+                  placeholder="Write your username"
+                />
+              </div>
               <p>
                 <ErrorMessage name="username" />
               </p>
             </div>
             <div className="input">
               <span>Password</span>
-              <Field name="password" type="password" placeholder="********" />
+              <div className="field">
+                <Field name="password" type="password" placeholder="********" />
+              </div>
               <p>
                 <ErrorMessage name="password" />
               </p>
             </div>
             <div className="input">
               <span>Rewrite password</span>
-              <Field
-                name="password_confirmation"
-                type="password"
-                placeholder="********"
-              />
+              <div className="field">
+                <Field
+                  name="password_confirmation"
+                  type="password"
+                  placeholder="********"
+                />
+              </div>
               <p>
                 <ErrorMessage name="password_confirmation" />
               </p>
@@ -93,4 +105,3 @@ function SignupForm() {
 }
 
 export default SignupForm;
-
