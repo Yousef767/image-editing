@@ -70,7 +70,7 @@ function LoginForm({ setOption, setShow }) {
                     <input
                       {...field}
                       type={showPassword ? "text" : "password"}
-                      placeholder="Enter your password"
+                      placeholder="********"
                       onChange={(e) => {
                         field.onChange(e);
                         setPasswordValue(e.target.value);

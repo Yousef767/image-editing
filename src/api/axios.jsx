@@ -8,7 +8,7 @@ export const AxiosInstance = axios.create({
 });
 
 export const AxiosBG = axios.create({
-  baseURL: "http://3rabapp.com/apps",
+  baseURL: "https://3rabapp.com/apps",
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
