@@ -82,13 +82,13 @@ function Navbar() {
                 <img src="/media/icons/material-symbols_close.png" alt="" />
               </button>
               {option === "login" ? (
-                <LoginForm setOption={setOption} />
+                <LoginForm setOption={setOption} setShow={setShow} />
               ) : option === "signup" ? (
-                <SignupForm setOption={setOption} />
+                <SignupForm setOption={setOption} setShow={setShow} />
               ) : option === "forgot" ? (
-                <ForgotPasswordForm setOption={setOption} />
+                <ForgotPasswordForm setOption={setOption} setShow={setShow}/>
               ) : option === "new" ? (
-                <NewPasswordForm setOption={setOption} token={token} />
+                <NewPasswordForm setOption={setOption} token={token} setShow={setShow}/>
               ) : (
                 <AuthOptions setOption={setOption} />
               )}

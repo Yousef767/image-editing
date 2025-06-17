@@ -1709,6 +1709,78 @@ footer {
   color: #939393;
 }
 
+.info {
+  position: absolute;
+  right: 15px;
+  z-index: 4;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.infoInner {
+  position: absolute;
+  top: 100%;
+  width: -moz-fit-content;
+  width: fit-content;
+  right: -40px;
+  padding: 20px;
+  background-color: #fff;
+  list-style: none;
+  box-shadow: 0px 0px 4px 2px rgba(115, 111, 208, 0.3);
+  border-radius: 10px;
+  z-index: 4;
+}
+.infoInner li {
+  color: rgb(138, 138, 127);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  padding-bottom: 3px;
+}
+.infoInner li:nth-child(1) {
+  font-weight: 600;
+}
+.infoInner li i {
+  color: rgb(138, 138, 127);
+  font-size: 1.1rem;
+}
+.infoInner .active i {
+  color: #736fd0;
+}
+
+.arrow {
+  position: absolute;
+  right: -5px;
+  top: calc(100% - 18px);
+  z-index: 5;
+}
+
+.infoInner2 {
+  right: 0;
+  z-index: 7;
+}
+
+.arrow2 {
+  right: 10px;
+  z-index: 8;
+}
+
+.eye {
+  position: absolute;
+  right: 45px;
+  z-index: 3;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
 .wayBtnsLogin h1 {
   width: 100%;
   display: flex;

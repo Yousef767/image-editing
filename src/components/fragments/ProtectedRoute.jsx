@@ -3,7 +3,7 @@ import { Navigate } from "react-router-dom";
 
 function ProtectedRoute({ component: Component }) {
   const token = Cookies.get("token");
-  return !token ? <Component /> : <Navigate to="/login" />;
+  return token ? <Component /> : <Navigate to="/" />;
 }
 
 export default ProtectedRoute;

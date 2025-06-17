@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import Bubble from "../Bubble";
 import { useEffect } from "react";
-import { GlowEffect } from "../GlowEffect";
+import { GlowEffect } from "../../../hooks/GlowEffect";
 function Pricing() {
   useEffect(() => {
     GlowEffect();

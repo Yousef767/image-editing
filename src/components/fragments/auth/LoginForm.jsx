@@ -2,42 +2,33 @@ import { ErrorMessage, Field, Formik, Form } from "formik";
 import * as Yup from "yup";
 import { Back } from "./BackBtn";
 import { useState } from "react";
-import { AxiosInstance } from "../../../api/axios";
-import { LOGIN } from "../../../api/routes";
-import Cookies from "js-cookie";
-import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
-import { handleError } from "../../../api/error";
+import { useAuthHandlers } from "../../../hooks/useAuthHandlers";
+import { Arrow, Eye, EyeSlash, Info } from "./icons/AuthIcons";
 
-function LoginForm({ setOption }) {
+function LoginForm({ setOption, setShow }) {
   const validation = Yup.object().shape({
     email: Yup.string()
       .email("Invalid email address")
       .required("Email is required"),
     password: Yup.string()
-      .min(6, "Password must be at least 6 characters")
-      .required("Password is required"),
+      .required("Password is required")
+      .min(8, "Password must be at least 8 characters")
+      .max(16, "Password must be at most 16 characters")
+      .matches(/[A-Z]/, "At least one capital letter is required")
+      .matches(/[a-z]/, "At least one small letter is required")
+      .matches(/[0-9]/, "At least one number is required")
+      .matches(/[^A-Za-z0-9]/, "At least one special character is required"),
   });
-  const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
-  const handleSubmit = async (values, resetForm) => {
-    setIsLoading(true);
-    try {
-      const res = await AxiosInstance.post(LOGIN, {
-        ...values,
-      });
-      toast.success(res.data.message);
-      Cookies.set("token", res.data.token);
-      resetForm();
-      setTimeout(() => {
-        navigate(0);
-      }, 2000);
-    } catch (error) {
-      handleError(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const { isLoading, handleSubmit } = useAuthHandlers();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
+  const [passwordValue, setPasswordValue] = useState("");
+  const hasMinLength = passwordValue.length >= 8 && passwordValue.length <= 16;
+  const hasUppercase = /[A-Z]/.test(passwordValue);
+  const hasLowercase = /[a-z]/.test(passwordValue);
+  const hasNumber = /[0-9]/.test(passwordValue);
+  const hasSpecial = /[^A-Za-z0-9]/.test(passwordValue);
+
   return (
     <div className="wayBtns wayBtnsLogin">
       <div className="wayBox">
@@ -53,7 +44,7 @@ function LoginForm({ setOption }) {
         <Formik
           initialValues={{ email: "", password: "" }}
           onSubmit={(values, { resetForm }) => {
-            handleSubmit(values, resetForm);
+            handleSubmit(values, resetForm, "login", setShow, "/dashboard");
           }}
           validationSchema={validation}
         >
@@ -74,11 +65,69 @@ function LoginForm({ setOption }) {
             <div className="input">
               <span>Password</span>
               <div className="field">
-                <Field
-                  name="password"
-                  type="password"
-                  placeholder="Enter your password"
-                />
+                <Field name="password">
+                  {({ field }) => (
+                    <input
+                      {...field}
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter your password"
+                      onChange={(e) => {
+                        field.onChange(e);
+                        setPasswordValue(e.target.value);
+                      }}
+                      onFocus={() => {
+                        setShowInfo(false);
+                      }}
+                    />
+                  )}
+                </Field>
+
+                <div
+                  className="info"
+                  onClick={() => {
+                    setShowInfo((prev) => !prev);
+                  }}
+                >
+                  <Info />
+                  {showInfo && (
+                    <>
+                      <div className="arrow">
+                        <Arrow />
+                      </div>
+                      <ul className="infoInner">
+                        <li>Your password must contain:</li>
+                        <li className={hasMinLength ? "active" : ""}>
+                          <i className="fa-solid fa-check-circle"></i> 8 to 16
+                          characters
+                        </li>
+                        <li className={hasUppercase ? "active" : ""}>
+                          <i className="fa-solid fa-check-circle"></i> At least
+                          one capital letter
+                        </li>
+                        <li className={hasLowercase ? "active" : ""}>
+                          <i className="fa-solid fa-check-circle"></i> At least
+                          one small letter
+                        </li>
+                        <li className={hasNumber ? "active" : ""}>
+                          <i className="fa-solid fa-check-circle"></i> At least
+                          one number
+                        </li>
+                        <li className={hasSpecial ? "active" : ""}>
+                          <i className="fa-solid fa-check-circle"></i> At least
+                          one special character
+                        </li>
+                      </ul>
+                    </>
+                  )}
+                </div>
+                <div
+                  className="eye"
+                  onClick={() => {
+                    setShowPassword((prev) => !prev);
+                  }}
+                >
+                  {showPassword ? <EyeSlash /> : <Eye />}
+                </div>
               </div>
               <p>
                 <ErrorMessage name="password" />
