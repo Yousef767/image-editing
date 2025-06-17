@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import * as Yup from "yup";
 import { Back } from "./BackBtn";
 
-function NewPassword() {
+function NewPasswordForm({ setOption, token }) {
   const validation = Yup.object().shape({
     password: Yup.string()
       .min(6, "Password must be at least 6 characters")
@@ -15,14 +15,12 @@ function NewPassword() {
   return (
     <div className="wayBtns wayBtnsLogin">
       <div className="wayBox">
-        <Link to={"/"} className="logoLink">
+        <div className="logoLink">
           <img className="logo" src="/logo.png" alt="" />
           New Password
-        </Link>
+        </div>
         <h1>
-          <Link to={"/login"}>
-            <Back />
-          </Link>
+          <Back setOption={setOption} option={"login"} />
           Continue with your mail
         </h1>
         <p>Use your email and other details to continue with us </p>
@@ -67,4 +65,4 @@ function NewPassword() {
   );
 }
 
-export default NewPassword;
+export default NewPasswordForm;

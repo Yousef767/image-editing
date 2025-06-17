@@ -4,12 +4,9 @@ import Home from "./components/pages/Home";
 import Navbar from "./components/layout/Navbar";
 import NotFoundPage from "./components/pages/NotFoundPage";
 import Footer from "./components/layout/Footer";
-import Login from "./components/pages/Login";
 import { Toaster } from "react-hot-toast";
-import Signup from "./components/pages/Signup";
 import Dashboard from "./components/pages/Dashboard";
 import ProtectedRoute from "./components/fragments/ProtectedRoute";
-import ForgotPassword from "./components/pages/ForgotPassword";
 
 function App() {
   return (
@@ -18,9 +15,9 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
+        {/* <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} /> */}
         <Route
           path="/dashboard"
           element={<ProtectedRoute component={Dashboard} />}

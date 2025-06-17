@@ -1,12 +1,12 @@
 import {Link} from 'react-router-dom'
 
-function AuthOptions({setShowForm}) {
+function AuthOptions({setOption}) {
   return (
     <div className="wayBtns">
         <div className="wayBox">
-          <Link to={"/"}>
+          <div>
             <img className="logo" src="/logo.png" alt="" />
-          </Link>
+          </div>
           <h1>Log in or sign up</h1>
           <p>Use your email or other serivce to continue with us </p>
           <div className="socialBtns">
@@ -26,7 +26,7 @@ function AuthOptions({setShowForm}) {
               <img src="/media/social-icons/twitter.svg" alt="" />
               Continue with Twitter
             </button>
-            <button onClick={() => setShowForm(true)}>
+            <button onClick={() => setOption('login')}>
               <img src="/media/social-icons/email.svg" alt="" />
               Continue with Email
             </button>

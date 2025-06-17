@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import * as Yup from "yup";
 import { Back } from "./BackBtn";
 
-function SignupForm() {
+function SignupForm({ setOption }) {
   const validation = Yup.object().shape({
     email: Yup.string()
       .email("Invalid email address")
@@ -21,14 +21,12 @@ function SignupForm() {
   return (
     <div className="wayBtns wayBtnsLogin">
       <div className="wayBox">
-        <Link to={"/"} className="logoLink">
+        <div className="logoLink">
           <img className="logo" src="/logo.png" alt="" />
           Sign up
-        </Link>
+        </div>
         <h1>
-          <Link to={"/login"}>
-            <Back />
-          </Link>
+          <Back setOption={setOption} />
           Continue with your mail
         </h1>
         <p>Use your email and other details to continue with us </p>
@@ -97,7 +95,14 @@ function SignupForm() {
           </Form>
         </Formik>
         <div className="dont">
-          Already have an account? <Link to={"/login"}>Login</Link>
+          Already have an account?{" "}
+          <button
+            onClick={() => {
+              setOption("login");
+            }}
+          >
+            Login
+          </button>
         </div>
       </div>
     </div>

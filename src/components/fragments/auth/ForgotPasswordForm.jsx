@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import * as Yup from "yup";
 import { Back } from "./BackBtn";
 
-function SignupForm() {
+function ForgotPasswordForm({setOption}) {
   const validation = Yup.object().shape({
     email: Yup.string()
       .email("Invalid email address")
@@ -12,14 +12,12 @@ function SignupForm() {
   return (
     <div className="wayBtns wayBtnsLogin">
       <div className="wayBox">
-        <Link to={"/"} className="logoLink">
+        <div className="logoLink">
           <img className="logo" src="/logo.png" alt="" />
           Forgot password
-        </Link>
+        </div>
         <h1>
-          <Link to={"/login"}>
-            <Back />
-          </Link>
+          <Back setOption={setOption} option={'login'}/>
           Continue with your mail
         </h1>
         <p>
@@ -60,4 +58,4 @@ function SignupForm() {
   );
 }
 
-export default SignupForm;
+export default ForgotPasswordForm;

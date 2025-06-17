@@ -1,4 +1,4 @@
-export function Back({ setShowForm }) {
+export function Back({ setOption, option }) {
   return (
     <svg
       width="24"
@@ -7,7 +7,7 @@ export function Back({ setShowForm }) {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       onClick={() => {
-        setShowForm?.(false);
+        setOption?.(option ? option : "options");
       }}
     >
       <path

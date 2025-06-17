@@ -5,8 +5,25 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
 import { Autoplay, Pagination } from "swiper/modules";
+import { AxiosBG } from "../../api/axios";
+import { useEffect } from "react";
+import { useState } from "react";
 
 function Dashboard() {
+  const [data, setData] = useState([]);
+  const fetchData = async () => {
+    try {
+      const res = await AxiosBG.get("/assets/backgrounds.json");
+      console.log(res.data);
+      setData(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   return (
     <div className="dashborad">
       <Aside />
@@ -81,6 +98,17 @@ function Dashboard() {
             modules={[Autoplay, Pagination]}
             className="mySwiper3"
           >
+            {/* {data.version &&
+              Array.from({ length: data.backgrounds_new.length }).map((_, i) => (
+                <SwiperSlide key={i}>
+                  <img
+                    src={`https://3rabapp.com/apps/assets/categories/cat${i}.png`}
+                    // src={`http://3rabapp.com/apps/assets/bg-thnumbail/cat0-${i}.png`}
+                    alt={`Thumbnail ${i}`}
+                  />
+                </SwiperSlide>
+              ))} */}
+
             <SwiperSlide>
               <img src="/media/banner.png" alt="" />
             </SwiperSlide>

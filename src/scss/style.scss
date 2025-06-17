@@ -1421,18 +1421,21 @@ footer {
   display: flex;
   align-items: flex-start;
   background-color: #fff;
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
 }
 .wayBox {
   @include flex();
   justify-content: flex-start;
   flex-direction: column;
   gap: 15px;
-  width: max(50%, 550px);
+  width: 100%;
   padding: 50px 30px;
 }
 .wayBtns {
   width: 50%;
-  height: 100dvh;
+  height: 90dvh;
   overflow-y: scroll;
   @include flex();
   justify-content: flex-start;
@@ -1485,7 +1488,7 @@ footer {
 }
 .authImg {
   width: calc(50%);
-  height: 100dvh;
+  height: 90dvh;
   object-fit: cover;
 }
 @media (max-width: 1000px) {
@@ -1522,7 +1525,7 @@ footer {
   }
 }
 .close {
-  position: fixed;
+  position: absolute;
   top: 20px;
   right: 20px;
   border-radius: 50%;
@@ -1552,7 +1555,7 @@ footer {
   gap: 15px;
   padding: 20px 0;
 
-  button {
+  button[type="submit"] {
     @include noBorder();
     width: 100%;
     @include flex();
@@ -1657,9 +1660,11 @@ footer {
   width: 100%;
   text-align: left;
   font-weight: 600;
-  a {
+  a,
+  button {
     font-weight: 500;
     color: $purple;
+    font-size: inherit;
   }
 }
 .dashborad {
@@ -1861,4 +1866,57 @@ footer {
   text-align: right;
   color: $purple;
   padding-top: 10px;
+  font-size: 1rem;
+}
+
+.loader {
+  width: 27px;
+  height: 27px;
+  border: 3px solid $black;
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.popUp {
+  @include flex();
+  width: 100%;
+  height: 100dvh;
+  position: fixed;
+  z-index: 50;
+  background-color: #00000060;
+}
+.popUpInner {
+  width: 1000px;
+  padding: 20px;
+  height: 100vh;
+  overflow-y: scroll;
+  &::-webkit-scrollbar {
+    width: 0;
+  }
+}
+
+@media (max-width: 1000px) {
+  .popUpInner {
+    width: 100%;
+    padding: 0;
+    .wayBtns {
+      height: calc(100dvh);
+      padding-bottom: 20px;
+    }
+  }
+  .authPage {
+    height: 100dvh;
+    border-radius: 0;
+  }
 }
