@@ -6,6 +6,7 @@ export const AxiosInstance = axios.create({
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
+    "Access-Control-Allow-Origin": "*",
   },
 });
 
@@ -14,5 +15,6 @@ export const AxiosBG = axios.create({
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
+    "Access-Control-Allow-Origin": "*",
   },
 });
