@@ -3,25 +3,34 @@ import { Link } from "react-router-dom";
 function Aside() {
   return (
     <aside className="aside">
-      <img className="logo" src="/logo.png" alt="" />
-      <h2>Let’s get creative</h2>
-      <div className="w100">
-        <Link className="btn fs-9rem" to={"##"}>
-          Create new project
+      <Link to={"/"}>
+        <img className="logo" src="/logo.png" alt="" />
+      </Link>
+      {/* <h2>Let’s get creative</h2> */}
+      <div className="Create w100">
+        <Link className="plus" to={"##"}>
+          <Plus />
         </Link>
+        Create
       </div>
       <ul>
         <li>
           <Link to={"##"}>
+            <Home />
+            Home
+          </Link>
+        </li>
+        <li>
+          <Link to={"##"}>
             <Youtube />
-            Youtube tutorial
+            YT tutorial
           </Link>
         </li>
         <li>
           <Link to={"##"}>
             {" "}
             <Dollar />
-            Restore purchase
+            Purchasing
           </Link>
         </li>
         <li>
@@ -33,7 +42,7 @@ function Aside() {
         <li>
           <Link to={"##"}>
             <Whatsapp />
-            Contact us via Whatsapp
+            Whatsapp
           </Link>
         </li>
       </ul>
@@ -144,6 +153,48 @@ function Youtube() {
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function Home() {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M17.6009 22.56H6.40094C4.58094 22.56 2.92094 21.16 2.62094 19.37L1.29094 11.4C1.07094 10.16 1.68094 8.57001 2.67094 7.78001L9.60094 2.23001C10.9409 1.15001 13.0509 1.16001 14.4009 2.24001L21.3309 7.78001C22.3109 8.57001 22.9109 10.16 22.7109 11.4L21.3809 19.36C21.0809 21.13 19.3809 22.56 17.6009 22.56Z"
+        fill="#736FD0"
+      />
+      <path
+        d="M12 18.75C11.59 18.75 11.25 18.41 11.25 18V15C11.25 14.59 11.59 14.25 12 14.25C12.41 14.25 12.75 14.59 12.75 15V18C12.75 18.41 12.41 18.75 12 18.75Z"
+        fill="white"
+      />
+    </svg>
+  );
+}
+
+function Plus() {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M18 12.75H6C5.59 12.75 5.25 12.41 5.25 12C5.25 11.59 5.59 11.25 6 11.25H18C18.41 11.25 18.75 11.59 18.75 12C18.75 12.41 18.41 12.75 18 12.75Z"
+        fill="#3E3C37"
+      />
+      <path
+        d="M12 18.75C11.59 18.75 11.25 18.41 11.25 18V6C11.25 5.59 11.59 5.25 12 5.25C12.41 5.25 12.75 5.59 12.75 6V18C12.75 18.41 12.41 18.75 12 18.75Z"
+        fill="#3E3C37"
       />
     </svg>
   );

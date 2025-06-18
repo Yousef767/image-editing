@@ -1811,17 +1811,17 @@ footer {
 
 .dashborad {
   display: flex;
+  background: linear-gradient(88.21deg, rgba(243, 211, 76, 0.4) 1.72%, rgba(201, 199, 250, 0.8) 24.34%, #F9D9FF 48.73%);
 }
 
 .aside {
-  width: 300px;
+  width: 150px;
   display: flex;
   align-items: flex-start;
   justify-content: flex-start;
   flex-direction: column;
   gap: 10px;
   padding: 20px 20px 50px 20px;
-  background: linear-gradient(88.21deg, rgba(243, 211, 76, 0.3), rgba(249, 217, 255, 0.3137254902));
   height: 100dvh;
   overflow-y: scroll;
   border-right: 1px solid rgb(115, 111, 208);
@@ -1834,15 +1834,16 @@ footer {
   font-size: 1.5rem;
   font-weight: 600;
   padding-bottom: 20px;
-  text-align: left;
+  text-align: center;
 }
 .aside p {
   font-size: 1rem;
   color: #939393;
-  text-align: left;
+  text-align: center;
 }
 .aside .logo {
   width: 70px;
+  margin: 0 auto;
 }
 .aside ul {
   list-style: none;
@@ -1857,6 +1858,8 @@ footer {
   align-items: center;
   gap: 10px;
   font-weight: 400;
+  flex-direction: column;
+  justify-content: center;
 }
 .aside ul li a svg {
   width: 30px;
