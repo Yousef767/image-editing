@@ -6,6 +6,16 @@ export default defineConfig({
   optimizeDeps: {
     include: ["fabric", "@imgly/background-removal"],
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://3rabapp.com', 
+        changeOrigin: true,
+        secure: false,
+        rewrite: path => path.replace(/^\/api/, ''),
+      },
+    },
+  },
   build: {
     rollupOptions: {
       output: {
