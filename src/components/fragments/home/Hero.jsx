@@ -19,7 +19,7 @@ function Hero() {
         </button>
       </div>
       <img className="heroImg" src="/hero2.png" alt="" />
-      <img className="bg" src="/bg.png" alt="" />
+      <img className="bg" src="/b.png" alt="" />
     </div>
   );
 }

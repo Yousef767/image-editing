@@ -8,11 +8,15 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/api': {
-        target: 'https://3rabapp.com', 
+      "/api": {
+        target: "https://admin.sigmaagencyjo.com",
         changeOrigin: true,
-        secure: false,
-        rewrite: path => path.replace(/^\/api/, ''),
+        rewrite: (path) => path.replace(/^\/api/, "/api/v1"),
+      },
+      "/bg": {
+        target: "https://3rabapp.com",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/bg/, "/apps"),
       },
     },
   },
@@ -23,7 +27,7 @@ export default defineConfig({
           if (id.includes("node_modules")) {
             if (id.includes("fabric")) return "vendor-fabric";
             if (id.includes("@imgly")) return "vendor-imgly";
-            return "vendor"; // Let Vite handle react splitting naturally
+            return "vendor";
           }
         },
       },

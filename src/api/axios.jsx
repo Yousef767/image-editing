@@ -1,6 +1,6 @@
 import axios from "axios";
 export const AxiosInstance = axios.create({
-  baseURL: "https://admin.sigmaagencyjo.com/api/v1",
+  baseURL: "/api",
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
@@ -8,11 +8,9 @@ export const AxiosInstance = axios.create({
 });
 
 export const AxiosBG = axios.create({
-  baseURL: "https://3rabapp.com/apps",
+  baseURL: "/bg",
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
   },
 });
-
-
