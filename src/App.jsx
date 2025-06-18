@@ -7,25 +7,28 @@ import Footer from "./components/layout/Footer";
 import { Toaster } from "react-hot-toast";
 import Dashboard from "./components/pages/Dashboard";
 import ProtectedRoute from "./components/fragments/ProtectedRoute";
+import { ShowOptionProvider } from "./hooks/ShowOptionProvider";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Toaster position="bottom-center" />
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        {/* <Route path="/login" element={<Login />} />
+    <ShowOptionProvider>
+      <BrowserRouter>
+        <Toaster position="bottom-center" />
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          {/* <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/forgot-password" element={<ForgotPassword />} /> */}
-        <Route
-          path="/dashboard"
-          element={<ProtectedRoute component={Dashboard} />}
-        />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-      <Footer />
-    </BrowserRouter>
+          <Route
+            path="/dashboard"
+            element={<ProtectedRoute component={Dashboard} />}
+          />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+        <Footer />
+      </BrowserRouter>
+    </ShowOptionProvider>
   );
 }
 

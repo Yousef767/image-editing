@@ -6,6 +6,7 @@ import SignupForm from "../fragments/auth/SignupForm";
 import AuthOptions from "../fragments/auth/AuthOptions";
 import ForgotPasswordForm from "../fragments/auth/ForgotPasswordForm";
 import NewPasswordForm from "../fragments/auth/NewPasswordForm";
+import { useShowOption } from "../../hooks/ShowOptionProvider";
 
 function Navbar() {
   const location = useLocation();
@@ -13,15 +14,8 @@ function Navbar() {
   const nav = useRef(null);
 
   useEffect(() => {
-    window.scrollTo({
-      top: 0,
-      left: 0,
-    });
-    setTimeout(() => {
-      if (nav.current) {
-        nav.current?.classList.remove("activeMenu");
-      }
-    }, 500);
+    window.scrollTo({ top: 0, left: 0 });
+    setTimeout(() => nav.current?.classList.remove("activeMenu"), 500);
   }, [pathname]);
 
   const toggleNav = () => {
@@ -32,16 +26,12 @@ function Navbar() {
   //   event.currentTarget.classList.toggle("active");
   // };
   const isActive = (path) => {
-    if (path === "/") {
-      return pathname === path ? "active" : "";
-    }
-    if (pathname.includes(path)) {
-      return "active";
-    }
-    return "";
+    return pathname === path || (path !== "/" && pathname.includes(path))
+      ? "active"
+      : "";
   };
-  const [show, setShow] = useState(false);
-  const [option, setOption] = useState("options");
+
+  const { show, setShow, option, setOption } = useShowOption();
   const handleShow = (option) => {
     setShow(true);
     setOption(option);
@@ -52,7 +42,29 @@ function Navbar() {
     }
   };
   const [searchParams] = useSearchParams();
-  const [token, setToken] = useState(null)
+  const [token, setToken] = useState(null);
+
+  const renderAuthForm = () => {
+    switch (option) {
+      case "login":
+        return <LoginForm setOption={setOption} setShow={setShow} />;
+      case "signup":
+        return <SignupForm setOption={setOption} setShow={setShow} />;
+      case "forgot":
+        return <ForgotPasswordForm setOption={setOption} setShow={setShow} />;
+      case "new":
+        return (
+          <NewPasswordForm
+            setOption={setOption}
+            token={token}
+            setShow={setShow}
+          />
+        );
+      default:
+        return <AuthOptions setOption={setOption} />;
+    }
+  };
+
   useEffect(() => {
     const token = searchParams.get("token");
 
@@ -81,17 +93,7 @@ function Navbar() {
               >
                 <img src="/media/icons/material-symbols_close.png" alt="" />
               </button>
-              {option === "login" ? (
-                <LoginForm setOption={setOption} setShow={setShow} />
-              ) : option === "signup" ? (
-                <SignupForm setOption={setOption} setShow={setShow} />
-              ) : option === "forgot" ? (
-                <ForgotPasswordForm setOption={setOption} setShow={setShow}/>
-              ) : option === "new" ? (
-                <NewPasswordForm setOption={setOption} token={token} setShow={setShow}/>
-              ) : (
-                <AuthOptions setOption={setOption} />
-              )}
+              {renderAuthForm()}
               <img className="authImg" src="/media/auth.jpg" alt="" />
             </div>
           </div>

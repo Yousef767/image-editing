@@ -1,7 +1,9 @@
 import { Link, useLocation } from "react-router-dom";
+import { useShowOption } from "../../hooks/ShowOptionProvider";
 function Footer() {
   const location = useLocation();
   const pathname = location.pathname;
+  const { setShow, setOption } = useShowOption();
   const allowedPaths = ["/", "/about", "/faq", "/stocks", "/contact"];
   if (!allowedPaths.includes(pathname)) {
     return null;
@@ -23,9 +25,15 @@ function Footer() {
             <h1>
               Ready to design? <br /> Start registration now
             </h1>
-            <Link className="btn" to={"/signup"}>
+            <button
+              className="btn"
+              onClick={() => {
+                setShow(true);
+                setOption("signup");
+              }}
+            >
               Start design
-            </Link>
+            </button>
           </div>
           <div className="media">
             <h2>Follow us on </h2>

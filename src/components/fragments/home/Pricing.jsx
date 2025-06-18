@@ -2,10 +2,12 @@ import { Link } from "react-router-dom";
 import Bubble from "../Bubble";
 import { useEffect } from "react";
 import { GlowEffect } from "../../../hooks/GlowEffect";
+import { useShowOption } from "../../../hooks/ShowOptionProvider";
 function Pricing() {
   useEffect(() => {
     GlowEffect();
   });
+  const { setShow, setOption } = useShowOption();
   return (
     <div className="bubbleInner">
       <Bubble position="top-left" />
@@ -21,9 +23,15 @@ function Pricing() {
             <h2>Free</h2>
             <span>For any kind of project or design work.</span>
             <h3>00.00</h3>
-            <Link to={"/"} className="btn w100">
+            <button
+              onClick={() => {
+                setShow(true);
+                setOption("signup");
+              }}
+              className="btn w100"
+            >
               Register now
-            </Link>
+            </button>
           </div>
           <div className="plan glow">
             <h2>Monthly</h2>
