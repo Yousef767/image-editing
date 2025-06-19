@@ -31,6 +31,7 @@ function Dashboard() {
     <div className={active ? "dashborad active" : "dashborad"}>
       <Aside />
       <div className="container">
+        <span className="dashboradBubble1"></span>
         <div className="dashboardNav">
           <div className="dnBtns">
             <button className=" menu2" onClick={handleActive}>
@@ -132,7 +133,47 @@ function Dashboard() {
           <div className="discover">
             <h1>Another way to design</h1>
             <div className="discoverLinks">
-              <Link to={"##"}>Whiteboard</Link>
+              <Link to={"##"}>
+                <img src="/media/icons/w1.png" alt="" />
+                Whiteboard
+              </Link>
+              <Link to={"##"}>
+                <img src="/media/icons/w2.png" alt="" />
+                Backgrounds
+              </Link>
+              <Link to={"##"}>
+                <img src="/media/icons/w3.png" alt="" />
+                Upload photo
+              </Link>
+            </div>
+          </div>
+          <div className="recent recent2">
+            <h3>Recent designs</h3>
+            <div className="recent-designs">
+              <Link to={"##"}>
+                <img src="/media/recent.png" alt="" />
+              </Link>
+              <Link to={"##"}>
+                <img src="/media/recent.png" alt="" />
+              </Link>
+              <Link to={"##"}>
+                <img src="/media/recent.png" alt="" />
+              </Link>
+              <Link to={"##"}>
+                <img src="/media/recent.png" alt="" />
+              </Link>
+              <Link to={"##"}>
+                <img src="/media/recent.png" alt="" />
+              </Link>
+              <Link to={"##"}>
+                <img src="/media/recent.png" alt="" />
+              </Link>
+              <Link to={"##"}>
+                <img src="/media/recent.png" alt="" />
+              </Link>
+              <Link to={"##"}>
+                <img src="/media/recent.png" alt="" />
+              </Link>
             </div>
           </div>
         </div>
