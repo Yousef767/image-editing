@@ -8,7 +8,7 @@ export function DashboardNav({ handleActive, handleSearch }) {
         <button className=" menu2" onClick={handleActive}>
           <Menu />
         </button>
-        <Link to={"##"}>
+        <Link className="gopro" to={"##"}>
           <Pro />
           Go pro
         </Link>

@@ -209,6 +209,10 @@ function GenerateImages() {
                     Generate image
                   </button>
                 </div>
+                <p className="noteForIG">
+                  Your image will be generated in a {selectedRatio} ratio, but you can
+                  choose a different ratio in the next section.
+                </p>
               </div>
               <div className="recent recent2">
                 <h3>Recent designs</h3>
