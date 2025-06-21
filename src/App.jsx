@@ -8,6 +8,7 @@ import { Toaster } from "react-hot-toast";
 import Dashboard from "./components/pages/Dashboard";
 import ProtectedRoute from "./components/fragments/ProtectedRoute";
 import { ShowOptionProvider } from "./hooks/ShowOptionProvider";
+import GenerateImages from "./components/pages/GenerateImages";
 
 function App() {
   return (
@@ -23,6 +24,10 @@ function App() {
           <Route
             path="/dashboard"
             element={<ProtectedRoute component={Dashboard} />}
+          />
+          <Route
+            path="/generate"
+            element={<ProtectedRoute component={GenerateImages} />}
           />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
