@@ -2133,7 +2133,8 @@ footer {
       position: fixed;
       left: 0;
       width: 150px;
-      overflow: initial;
+      overflow-y: scroll;
+      overflow-x: hidden;
       padding: 20px;
     }
     .container {
