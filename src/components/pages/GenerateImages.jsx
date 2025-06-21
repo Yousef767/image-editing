@@ -78,11 +78,21 @@ function GenerateImages() {
     setSelectedStyle(style);
     setIsOpen2(false);
   };
+  const handleDownload = (event) => {
+    const url = event.target.src;
+    const filename = url.split("/").pop(); 
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
   return (
     <div className={active ? "dashborad active" : "dashborad"}>
       <Aside />
-      <div className="container">
-        <span className="dashboradBubble1"></span>
+      <div className="container dashb">
         <DashboardNav handleActive={handleActive} handleSearch={handleSearch} />
         <div className="content">
           <div className="igContent">
@@ -215,8 +225,47 @@ function GenerateImages() {
                   you can choose a different ratio in the next section.
                 </p>
               </div>
+
               <div className="recent recent2">
-                <h3>Recent designs</h3>
+                <h3 className="seeAll">
+                  Your latest generating
+                  <Link to={"##"} className="a">
+                    Sell All
+                  </Link>
+                </h3>
+                <div className="recent-generates">
+                  <p>A tortoise eats a lettuce </p>
+                  <div className="gsimgs">
+                    <img
+                      src="/media/recent.png"
+                      alt=""
+                      onClick={handleDownload}
+                    />
+                    <img
+                      src="/media/recent.png"
+                      alt=""
+                      onClick={handleDownload}
+                    />
+                    <img
+                      src="/media/recent.png"
+                      alt=""
+                      onClick={handleDownload}
+                    />
+                    <img
+                      src="/media/recent.png"
+                      alt=""
+                      onClick={handleDownload}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="recent recent2">
+                <h3 className="seeAll">
+                  Recent designs{" "}
+                  <Link to={"##"} className="a">
+                    Sell All
+                  </Link>
+                </h3>
                 <div className="recent-designs">
                   <Link to={"##"}>
                     <img src="/media/recent.png" alt="" />
