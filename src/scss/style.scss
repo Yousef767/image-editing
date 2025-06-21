@@ -2217,6 +2217,7 @@ footer {
 }
 .igContent {
   max-width: 1200px;
+  width: 100%;
   display: flex;
   gap: 30px;
   align-items: flex-start;
@@ -2503,9 +2504,11 @@ footer {
     width: 100%;
   }
   .igContent {
-    flex-direction: column;
-    a {
+    flex-direction: column-reverse;
+    .also{
+      a {
       width: 100%;
+    }
     }
   }
   .styleBtns {
