@@ -180,7 +180,10 @@ function GenerateImages() {
                                   ? "active"
                                   : ""
                               }`}
-                              onClick={() => selectStyle(style)}
+                              onClick={() => {
+                                selectStyle(style);
+                                setIsOpen2(false);
+                              }}
                             >
                               <img src={style.image} alt={style.name} />
                               <span>{style.name}</span>
