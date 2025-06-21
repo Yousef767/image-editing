@@ -2087,6 +2087,7 @@ footer {
     width: 0;
     overflow: hidden;
     padding: 0;
+    overflow-y: scroll;
   }
   .container {
     width: calc(100% - 40px);
@@ -2111,6 +2112,7 @@ footer {
     background-color: #f7f3e4;
     z-index: 5;
     height: calc(100dvh - 80px);
+    overflow-y: scroll;
   }
   .container {
     z-index: 1;
@@ -2505,10 +2507,10 @@ footer {
   }
   .igContent {
     flex-direction: column-reverse;
-    .also{
+    .also {
       a {
-      width: 100%;
-    }
+        width: 100%;
+      }
     }
   }
   .styleBtns {
@@ -2536,13 +2538,14 @@ footer {
   .styleBtns {
     width: 100%;
   }
-  .selector-toggle,.style-toggle {
+  .selector-toggle,
+  .style-toggle {
     width: 100%;
     display: flex;
     justify-content: space-between;
   }
-  .recent2{
-    .recent-designs{
+  .recent2 {
+    .recent-designs {
       justify-content: center;
     }
   }
