@@ -2266,6 +2266,13 @@ footer {
   }
   .input {
     margin-top: 20px;
+    .field{
+      border-radius: 12px;
+    }
+    textarea{
+      border-radius: 10px;
+
+    }
   }
 }
 .size-selector {
@@ -2283,7 +2290,38 @@ footer {
     cursor: pointer;
     font-size: 14px;
     font-weight: 500;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    position: relative;
+    box-sizing: border-box;
+    background-clip: padding-box;
+    border: 1px solid #ccc;
+    transition: 0.3s all ease;
+    &:before {
+      opacity: 0;
+      transition: 0.3s all ease;
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: -1;
+      margin: -1px -1.5px -2px -1.5px;
+      @media (max-width: 700px) {
+        margin: -2px -1.5px -1.5px -1.5px;
+      }
+      border-radius: 11px;
+      background: linear-gradient(87.95deg, #090edb -15.78%, #e73dc4 102.06%);
+    }
 
+    &.active {
+      border: 1px solid transparent;
+    }
+    &.active:before {
+      opacity: 1;
+    }
     .label {
       color: #444;
     }
@@ -2373,13 +2411,45 @@ footer {
     align-items: center;
     gap: 15px;
     padding: 10px 12px;
-    border: 1px solid #ccc;
     border-radius: 10px;
     background: #fff;
     cursor: pointer;
     font-size: 14px;
     font-weight: 500;
     min-width: 160px;
+
+    display: flex;
+    align-items: center;
+    width: 100%;
+    position: relative;
+    box-sizing: border-box;
+    background-clip: padding-box;
+    border: 1px solid #ccc;
+    transition: 0.3s all ease;
+    &:before {
+      opacity: 0;
+      transition: 0.3s all ease;
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: -1;
+      margin: -1px -1.5px -2px -1.5px;
+      @media (max-width: 700px) {
+        margin: -2px -1.5px -1.5px -1.5px;
+      }
+      border-radius: 11px;
+      background: linear-gradient(87.95deg, #090edb -15.78%, #e73dc4 102.06%);
+    }
+
+    &.active {
+      border: 1px solid transparent;
+    }
+    &.active:before {
+      opacity: 1;
+    }
 
     .label {
       color: #444;
@@ -2430,7 +2500,7 @@ footer {
       width: 100%;
       height: 80px;
       object-fit: cover;
-      border-radius: 6px;
+      border-radius: 3px;
       outline: 4px solid transparent;
       transition: 0.2s all ease;
     }
@@ -2573,14 +2643,13 @@ footer {
   }
 }
 
-.noteForIG{
-  font-size: .8rem !important;
+.noteForIG {
+  font-size: 0.8rem !important;
   font-weight: 500 !important;
   color: rgba(105, 105, 105, 1);
   padding-top: 10px;
-
 }
-.gopro{
+.gopro {
   color: $purple;
   font-weight: 600;
 }

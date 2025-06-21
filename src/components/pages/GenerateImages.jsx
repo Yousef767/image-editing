@@ -76,7 +76,7 @@ function GenerateImages() {
 
   const selectStyle = (style) => {
     setSelectedStyle(style);
-    setIsOpen(false);
+    setIsOpen2(false);
   };
   return (
     <div className={active ? "dashborad active" : "dashborad"}>
@@ -111,7 +111,9 @@ function GenerateImages() {
                   <div className="styleBtns">
                     <div className="size-selector">
                       <button
-                        className="selector-toggle"
+                        className={
+                          isOpen ? "selector-toggle active" : "selector-toggle"
+                        }
                         onClick={toggleDropdown}
                       >
                         <span className="label">
@@ -161,7 +163,9 @@ function GenerateImages() {
                     </div>
                     <div className="style-selector">
                       <button
-                        className="style-toggle"
+                        className={
+                          isOpen2 ? "style-toggle active" : "style-toggle"
+                        }
                         onClick={toggleDropdown2}
                       >
                         <span className="label">
@@ -180,10 +184,7 @@ function GenerateImages() {
                                   ? "active"
                                   : ""
                               }`}
-                              onClick={() => {
-                                selectStyle(style);
-                                setIsOpen2(false);
-                              }}
+                              onClick={() => selectStyle(style)}
                             >
                               <img src={style.image} alt={style.name} />
                               <span>{style.name}</span>
@@ -210,8 +211,8 @@ function GenerateImages() {
                   </button>
                 </div>
                 <p className="noteForIG">
-                  Your image will be generated in a {selectedRatio} ratio, but you can
-                  choose a different ratio in the next section.
+                  Your image will be generated in a {selectedRatio} ratio, but
+                  you can choose a different ratio in the next section.
                 </p>
               </div>
               <div className="recent recent2">
