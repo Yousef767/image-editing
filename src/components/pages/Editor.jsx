@@ -160,15 +160,60 @@ function Editor() {
     });
   }, [canvas, imageUrl]);
 
+  // const handleFileUpload = (e) => {
+  //   const file = e.target.files[0];
+  //   if (!file) return;
+
+  //   const reader = new FileReader();
+  //   reader.onload = (event) => {
+  //     setImageUrl(event.target.result);
+  //   };
+  //   reader.readAsDataURL(file);
+  // };
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
-    if (!file) return;
+    if (!file || !canvas) return;
 
     const reader = new FileReader();
     reader.onload = (event) => {
-      setImageUrl(event.target.result);
+      fabric.Image.fromURL(event.target.result, (img) => {
+        // Calculate scaling to fit within canvas while maintaining aspect ratio
+        const maxWidth = canvas.width * 0.8; // 80% of canvas width
+        const maxHeight = canvas.height * 0.8; // 80% of canvas height
+        const scale = Math.min(
+          maxWidth / img.width,
+          maxHeight / img.height,
+          1 // Don't scale up if image is smaller
+        );
+
+        // Center the image on canvas with slight random offset
+        const left =
+          (canvas.width - img.width * scale) / 2 + (Math.random() * 40 - 20);
+        const top =
+          (canvas.height - img.height * scale) / 2 + (Math.random() * 40 - 20);
+
+        img.set({
+          left,
+          top,
+          scaleX: scale,
+          scaleY: scale,
+          originX: "center",
+          originY: "center",
+          selectable: true,
+          id: `image-${Date.now()}`,
+          name: `Image ${canvas.getObjects().length + 1}`,
+        });
+
+        canvas.add(img);
+        canvas.setActiveObject(img);
+        canvas.requestRenderAll();
+        saveCanvasState(canvas);
+      });
     };
     reader.readAsDataURL(file);
+
+    // Reset file input to allow selecting the same file again
+    e.target.value = "";
   };
   const cropRectRef = useRef(null);
   const isDrawing = useRef(false);
@@ -488,6 +533,14 @@ function Editor() {
 
     canvas.renderAll();
     saveCanvasState(canvas);
+    // if (activeObject) {
+    //   activeObject.set("fill", selectedColor);
+    // } else {
+    //   toast.error("Select object to fill");
+    // }
+
+    // canvas.renderAll();
+    // saveCanvasState(canvas);
   };
 
   const startErasing = () => {
@@ -978,72 +1031,81 @@ function Editor() {
                 Layers
               </button>
               {showLayersPanel && (
-                <>
-                  <div className="layers-panel">
-                    <div className="layers-list">
-                      {layers.map((layer, index) => (
-                        <div
-                          key={layer.id}
-                          className="layer-img"
-                          draggable
-                          onDragStart={(e) =>
-                            e.dataTransfer.setData("text/plain", index)
-                          }
-                          onDragOver={(e) => e.preventDefault()}
-                          onDrop={(e) => {
-                            e.preventDefault();
-                            const fromIndex = parseInt(
-                              e.dataTransfer.getData("text/plain")
-                            );
-                            const toIndex = index;
+                <div className="layers-panel">
+                  <div className="layers-list">
+                    {layers.map((layer, index) => (
+                      <div
+                        key={layer.id}
+                        className="layer-img"
+                        draggable
+                        // onDoubleClick={() => {
+                        //   layer.object.visible = !layer.object.visible;
+                        //   canvas.requestRenderAll();
+                        // }}
+                        onDragStart={(e) => {
+                          e.dataTransfer.setData("text/plain", index);
+                          e.currentTarget.style.opacity = "0.4"; // Visual feedback
+                        }}
+                        onDragEnd={(e) => {
+                          e.currentTarget.style.opacity = "1";
+                        }}
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          e.currentTarget.classList.add("drag-over");
+                        }}
+                        onDragLeave={(e) => {
+                          e.currentTarget.classList.remove("drag-over");
+                        }}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          e.currentTarget.classList.remove("drag-over");
 
-                            // Reorder layers array
-                            const newLayers = [...layers];
-                            const [movedLayer] = newLayers.splice(fromIndex, 1);
-                            newLayers.splice(toIndex, 0, movedLayer);
+                          const fromIndex = parseInt(
+                            e.dataTransfer.getData("text/plain")
+                          );
+                          const toIndex = index;
 
-                            // Update canvas z-index
-                            newLayers.forEach((layer, idx) => {
-                              canvas.moveTo(layer.object, idx);
-                            });
+                          if (fromIndex === toIndex) return;
 
-                            setLayers(newLayers);
+                          // Create new array without mutating state directly
+                          const newLayers = [...layers];
+                          const [movedLayer] = newLayers.splice(fromIndex, 1);
+                          newLayers.splice(toIndex, 0, movedLayer);
+
+                          // Update both state and canvas
+                          setLayers(newLayers);
+
+                          // Important: Update canvas z-index without removing objects
+                          canvas.discardActiveObject();
+                          newLayers.forEach((layerObj, idx) => {
+                            canvas.moveTo(layerObj.object, idx);
+                          });
+
+                          canvas.requestRenderAll();
+                          saveCanvasState(canvas);
+                        }}
+                      >
+                        <img
+                          src={layer.object.toDataURL({
+                            format: "png",
+                            quality: 0.5,
+                          })}
+                          alt={layer.name}
+                          className={`layer-thumbnail ${
+                            canvas.getActiveObject()?.id === layer.id
+                              ? "active"
+                              : ""
+                          }`}
+                          onClick={() => {
+                            canvas.setActiveObject(layer.object);
                             canvas.requestRenderAll();
                           }}
-                        >
-                          <img
-                            src={layer.object.toDataURL({
-                              format: "png",
-                              quality: 0.5,
-                            })}
-                            alt={layer.name}
-                            className={`layer-thumbnail ${
-                              canvas.getActiveObject()?.id === layer.id
-                                ? "active"
-                                : ""
-                            }`}
-                            onClick={() => {
-                              // Show only this layer
-                              canvas.getObjects().forEach((obj) => {
-                                obj.visible = obj.id === layer.id;
-                              });
-
-                              // Bring to front and select
-                              canvas.bringToFront(layer.object);
-                              canvas.setActiveObject(layer.object);
-                              canvas.requestRenderAll();
-                            }}
-                          />
-                        </div>
-                      ))}
-                    </div>
+                        />
+                      </div>
+                    ))}
                   </div>
-                  <p>
-                    {" "}
-                    Note: You can reorder the layers by simply swiping &
-                    dragging them up or down.
-                  </p>
-                </>
+                  <p>Note: Drag layers to reorder them</p>
+                </div>
               )}
             </div>
           </div>
