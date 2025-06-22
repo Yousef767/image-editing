@@ -606,6 +606,7 @@ nav {
   font-weight: 500;
   overflow: hidden;
   width: fit-content;
+  cursor: pointer;
   img {
     width: 20px;
     object-fit: contain;
@@ -636,9 +637,8 @@ nav {
 
 .image-editor {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
+  align-items: flex-start;
+  padding-top: 20px;
 }
 
 .toolbar {
@@ -649,82 +649,17 @@ nav {
   justify-content: center;
 }
 
-.button {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.button.active {
-  background: #007bff;
-  color: white;
-}
-
-.filter-control {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.canvas-container {
-  border: 1px solid #ddd;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-.layers-panel {
-  position: absolute;
-  right: 20px;
-  top: 60px;
-  width: 250px;
-  background: transparent;
-  border: 1px solid #ddd;
-  padding: 10px;
-  z-index: 100;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.layers-list {
-  max-height: 400px;
-  overflow-y: auto;
-}
-
-.layer-item {
-  display: flex;
-  align-items: center;
-  padding: 5px;
-  margin: 2px 0;
-  border: 1px solid #eee;
-}
-
-.layer-item.active {
-  background-color: #e0f0ff;
-}
-
-.layer-name {
-  flex-grow: 1;
-  margin: 0 10px;
-  cursor: pointer;
-}
-
-.layer-actions {
-  display: flex;
-  gap: 5px;
-}
-
-.layer-visibility {
-  margin-right: 5px;
-}
 .color-picker-container {
   position: relative;
 }
 .color-picker-popup {
+  @include flex();
+  gap: 10px;
+  flex-direction: column;
   position: absolute;
-  top: 100%;
-  z-index: 5;
+  top: calc(100% + 20px);
+  z-index: 6;
+  left: -90px;
 }
 .isRemovingBg {
   opacity: 1;
@@ -2558,7 +2493,7 @@ footer {
 .btn3 {
   width: fit-content;
   font-size: 0.9rem;
-  height: 42px;
+  min-height: 42px;
 }
 
 @media (max-width: 1200px) {
@@ -2717,4 +2652,344 @@ footer {
   background-image: url("../../public/media/dashb.jpg");
   background-size: cover;
   background-repeat: no-repeat;
+}
+.editor {
+  width: 100%;
+  padding: 90px 20px 20px 20px;
+  background-color: $body;
+  height: 100dvh;
+  overflow-y: scroll;
+  position: relative;
+  &::-webkit-scrollbar {
+    width: 0;
+  }
+  .dashboardNav {
+    border-radius: 20px;
+    background: linear-gradient(
+      68.46deg,
+      #f9e9af 29.64%,
+      rgba(201, 199, 250, 0.8) 47.28%,
+      #f9d9ff 58.95%
+    );
+    height: 65px;
+    position: fixed;
+    top: 10px;
+    width: calc(100% - 40px);
+    left: 20px;
+    z-index: 10;
+  }
+}
+.dashborad.editorPage {
+  .aside {
+    position: fixed !important;
+    left: -100% !important;
+    top: 0 !important;
+    padding: 20px;
+    height: calc(100dvh);
+    width: 150px;
+    overflow-y: scroll;
+    background-color: #f7f3e4;
+    z-index: 6;
+    padding-top: 100px;
+  }
+}
+.dashborad.editorPage.active {
+  .aside {
+    left: 0 !important;
+  }
+}
+.editorBody {
+  width: 100%;
+  display: flex;
+}
+.sideTools {
+  display: flex;
+  width: 370px;
+  height: calc(100dvh - 100px);
+  background-color: #fff;
+  box-shadow: 0px 0px 0px rgba(176, 53, 87, 0.12);
+  border-radius: 10px;
+  padding: 20px 10px;
+  gap: 20px;
+  overflow-y: scroll;
+  position: sticky;
+  top: 0;
+  &::-webkit-scrollbar {
+    width: 0;
+  }
+}
+.mainSide {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100px;
+  background-color: #fff;
+  border-radius: 10px;
+  position: sticky;
+  top: 0;
+  button,
+  a {
+    font-size: 0.7rem;
+    font-weight: 500;
+    @include flex();
+    flex-direction: column;
+    gap: 4px;
+    .svg {
+      @include flex();
+      padding: 1px;
+      border-radius: 5px;
+      background-color: #fff;
+      transition: 0.3s all ease;
+      width: fit-content;
+      svg {
+        width: 28px;
+        height: 28px;
+        path {
+          transition: 0.3s all ease;
+        }
+      }
+    }
+  }
+  .active {
+    .svg {
+      box-shadow: 0px 0px 4px 1px rgba(115, 111, 208, 0.3);
+      svg {
+        path {
+          stroke: $yellow;
+        }
+      }
+    }
+  }
+  .active.fill {
+    .svg {
+      box-shadow: 0px 0px 4px 1px rgba(115, 111, 208, 0.3);
+      svg {
+        path {
+          fill: $yellow;
+        }
+        rect {
+          stroke: $yellow;
+        }
+      }
+    }
+  }
+}
+.showSide {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 30px;
+  width: 250px;
+  padding-right: 10px;
+  .btn3 {
+    width: 100%;
+    padding: 0 20px;
+    height: 40px;
+    border-radius: 20px;
+  }
+}
+.recent3 {
+  margin: 0;
+  padding: 0;
+  p {
+    font-weight: 400;
+  }
+  .recent-designs {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    a {
+      width: calc(50% - 5px);
+      img {
+        height: 130px;
+      }
+    }
+  }
+}
+.image-editor {
+  width: calc(100% - 370px);
+}
+.tools {
+  width: 100%;
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 20px;
+  position: relative;
+}
+.redoundo {
+  @include flex();
+  gap: 20px;
+  height: 100%;
+  button {
+    @include flex();
+    @include circle(33px);
+    background-color: $purple;
+    &:disabled {
+      background: rgba(189, 189, 189, 1);
+    }
+  }
+}
+.toolbar {
+  display: flex;
+  gap: 20px;
+  background-color: #fff;
+  border-radius: 20px;
+  padding: 15px 20px;
+  box-shadow: 0px 0px 12px 0px rgba(176, 53, 87, 0.12);
+  margin: 0;
+
+  button {
+    @include flex();
+    flex-direction: column;
+    gap: 5px;
+    font-weight: 500;
+    font-size: 0.8rem;
+  }
+}
+.mainTools {
+  width: calc(100% - 200px);
+  @include flex();
+  flex-direction: column;
+  gap: 30px;
+}
+
+.canvas-container {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  canvas {
+    border: 1px dashed $black;
+  }
+}
+.filter-control {
+  position: absolute;
+  top: 100px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+  background-color: #fff;
+  z-index: 5;
+  padding: 20px;
+  border-radius: 10px;
+  width: 300px;
+  input {
+    @include noBorder();
+    width: 100%;
+    accent-color: $yellow;
+    background: transparent;
+  }
+}
+.tandv {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+  span {
+    text-transform: capitalize;
+  }
+}
+.btnsmall {
+  padding: 0 20px;
+  font-size: 0.8rem;
+  height: 36px;
+}
+.nav2Btns {
+  display: flex;
+  justify-content: right;
+  flex-shrink: 1;
+  flex-grow: 1;
+  align-items: center;
+  gap: 20px;
+  button {
+    background-color: #fff;
+    color: $purple;
+    @include flex();
+    gap: 10px;
+    border-radius: 15px;
+    height: 40px;
+    padding: 0 15px;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+}
+.button {
+  background-color: #fff;
+  color: $purple;
+  @include flex();
+  gap: 10px;
+  border-radius: 15px;
+  height: 40px;
+  padding: 0 15px;
+  font-size: 1rem;
+  font-weight: 500;
+  box-shadow: 0px 0px 6.1px 0px rgba(115, 111, 208, 0.25);
+}
+
+.layersB {
+  @include flex();
+  flex-direction: column;
+  width: 200px;
+  padding-top: 20px;
+  p{
+    padding-top: 20px;
+    font-size: .9rem;
+  }
+}
+
+.layers-panel {
+  position: relative;
+  width: 100%;
+  background: transparent;
+  z-index: 100;
+  margin-top: 20px;
+}
+
+.layers-list {
+  @include flex();
+  flex-direction: column;
+  gap: 10px;
+}
+.layer-img {
+  @include flex();
+  padding: 0 10px;
+  background-color: #fff;
+  width: 100px;
+  height: 110px;
+  border-radius: 10px;
+border: 3px solid rgba(138, 138, 127, 1);
+  img {
+    width: 100%;
+    object-fit: contain;
+    height: 100%;
+  }
+}
+
+.layer-item {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  margin: 2px 0;
+}
+
+.layer-item.active {
+  background-color: #e0f0ff;
+}
+
+.layer-name {
+  flex-grow: 1;
+  margin: 0 10px;
+  cursor: pointer;
+}
+
+.layer-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.layer-visibility {
+  margin-right: 5px;
 }

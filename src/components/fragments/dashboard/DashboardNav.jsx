@@ -1,7 +1,12 @@
 import { Field, Form, Formik } from "formik";
 import { Link } from "react-router-dom";
 
-export function DashboardNav({ handleActive, handleSearch }) {
+export function DashboardNav({
+  handleActive,
+  handleSearch,
+  type,
+  downloadImage,
+}) {
   return (
     <div className="dashboardNav">
       <div className="dnBtns">
@@ -13,25 +18,64 @@ export function DashboardNav({ handleActive, handleSearch }) {
           Go pro
         </Link>
       </div>
-      <Formik
-        initialValues={{
-          search: "",
-        }}
-        onSubmit={(values) => {
-          handleSearch(values);
-        }}
-      >
-        <Form className="searchInput">
-          <Field
-            name="search"
-            type="search"
-            placeholder="Search for background"
-          />
+      {type !== 2 ? (
+        <Formik
+          initialValues={{
+            search: "",
+          }}
+          onSubmit={(values) => {
+            handleSearch(values);
+          }}
+        >
+          <Form className="searchInput">
+            <Field
+              name="search"
+              type="search"
+              placeholder="Search for background"
+            />
+            <button>
+              <i className="fa-regular fa-magnifying-glass"></i>
+            </button>
+          </Form>
+        </Formik>
+      ) : (
+        <div className="nav2Btns">
           <button>
-            <i className="fa-regular fa-magnifying-glass"></i>
+            <svg
+              width="24"
+              height="25"
+              viewBox="0 0 24 25"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M14.2209 22.13C13.0409 22.13 11.3709 21.3 10.0509 17.33L9.33086 15.17L7.17086 14.45C3.21086 13.13 2.38086 11.46 2.38086 10.28C2.38086 9.11 3.21086 7.43 7.17086 6.1L15.6609 3.27C17.7809 2.56 19.5509 2.77 20.6409 3.85C21.7309 4.93 21.9409 6.71 21.2309 8.83L18.4009 17.32C17.0709 21.3 15.4009 22.13 14.2209 22.13ZM7.64086 7.53C4.86086 8.46 3.87086 9.56 3.87086 10.28C3.87086 11 4.86086 12.1 7.64086 13.02L10.1609 13.86C10.3809 13.93 10.5609 14.11 10.6309 14.33L11.4709 16.85C12.3909 19.63 13.5009 20.62 14.2209 20.62C14.9409 20.62 16.0409 19.63 16.9709 16.85L19.8009 8.36C20.3109 6.82 20.2209 5.56 19.5709 4.91C18.9209 4.26 17.6609 4.18 16.1309 4.69L7.64086 7.53Z"
+                fill="#736FD0"
+              />
+              <path
+                d="M10.1108 14.9C9.92078 14.9 9.73078 14.83 9.58078 14.68C9.29078 14.39 9.29078 13.91 9.58078 13.62L13.1608 10.03C13.4508 9.74 13.9308 9.74 14.2208 10.03C14.5108 10.32 14.5108 10.8 14.2208 11.09L10.6408 14.68C10.5008 14.83 10.3008 14.9 10.1108 14.9Z"
+                fill="#736FD0"
+              />
+            </svg>
+            Share
           </button>
-        </Form>
-      </Formik>
+          <button onClick={downloadImage}>
+            <svg
+              width="24"
+              height="25"
+              viewBox="0 0 24 25"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12 16.5L7 11.5L8.4 10.05L11 12.65V4.5H13V12.65L15.6 10.05L17 11.5L12 16.5ZM6 20.5C5.45 20.5 4.97933 20.3043 4.588 19.913C4.19667 19.5217 4.00067 19.0507 4 18.5V15.5H6V18.5H18V15.5H20V18.5C20 19.05 19.8043 19.521 19.413 19.913C19.0217 20.305 18.5507 20.5007 18 20.5H6Z"
+                fill="#736FD0"
+              />
+            </svg>
+            Download
+          </button>
+        </div>
+      )}
       <div className="avatar">
         <img src="/media/avatar.png" alt="" />
         User name

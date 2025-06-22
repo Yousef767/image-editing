@@ -9,6 +9,7 @@ import Dashboard from "./components/pages/Dashboard";
 import ProtectedRoute from "./components/fragments/ProtectedRoute";
 import { ShowOptionProvider } from "./hooks/ShowOptionProvider";
 import GenerateImages from "./components/pages/GenerateImages";
+import Editor from "./components/pages/Editor";
 
 function App() {
   return (
@@ -28,6 +29,10 @@ function App() {
           <Route
             path="/generate"
             element={<ProtectedRoute component={GenerateImages} />}
+          />
+          <Route
+            path="/editor"
+            element={<ProtectedRoute component={Editor} />}
           />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>

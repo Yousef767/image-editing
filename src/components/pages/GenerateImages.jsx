@@ -91,7 +91,7 @@ function GenerateImages() {
 
   return (
     <div className={active ? "dashborad active" : "dashborad"}>
-      <Aside />
+      <Aside type={2} />
       <div className="container dashb">
         <DashboardNav handleActive={handleActive} handleSearch={handleSearch} />
         <div className="content">
