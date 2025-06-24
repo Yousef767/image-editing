@@ -1,9 +1,27 @@
 import { Link, useLocation } from "react-router-dom";
 import { useShowOption } from "../../hooks/ShowOptionProvider";
+import { AxiosInstance } from "../../api/axios";
+import { handleError } from "../../api/error";
+import { useEffect, useState } from "react";
 function Footer() {
   const location = useLocation();
   const pathname = location.pathname;
   const { setShow, setOption } = useShowOption();
+  const [data, setData] = useState(null);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await AxiosInstance.get("/settings");
+        console.log(res.data.data);
+        setData(res.data.data);
+      } catch (error) {
+        handleError(error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  if (!data) return null;
   const allowedPaths = ["/", "/about", "/faq", "/stocks", "/contact"];
   if (!allowedPaths.includes(pathname)) {
     return null;
@@ -38,30 +56,38 @@ function Footer() {
           <div className="media">
             <h2>Follow us on </h2>
             <ul>
-              <li>
-                <a href="##" target="_blank">
-                  <img src="/media/icons/instagram.svg" alt="" />
-                </a>
-              </li>
-              <li>
-                <a href="##" target="_blank">
-                  <img src="/media/icons/snap.svg" alt="" />
-                </a>
-              </li>
-              <li>
-                <a href="##" target="_blank">
-                  <img src="/media/icons/facebook.svg" alt="" />
-                </a>
-              </li>
+              {data.instagram_link && (
+                <li>
+                  <a href={data.instagram_link} target="_blank">
+                    <img src="/media/icons/instagram.svg" alt="" />
+                  </a>
+                </li>
+              )}
+              {data.snapchat_link && (
+                <li>
+                  <a href={data.snapchat_link} target="_blank">
+                    <img src="/media/icons/snap.svg" alt="" />
+                  </a>
+                </li>
+              )}
+              {data.facebook_link && (
+                <li>
+                  <a href={data.facebook_link} target="_blank">
+                    <img src="/media/icons/facebook.svg" alt="" />
+                  </a>
+                </li>
+              )}
             </ul>
           </div>
         </div>
         <div className="footerBox bottomFooter">
           <div className="media">
             <h2>Download Kitaba app </h2>
-            <a href="##" className="a">
-              <img src="/media/apple.png" alt="" />
-            </a>
+            {data.app_ios_link && (
+              <a href={data.app_ios_link} className="a">
+                <img src="/media/apple.png" alt="" />
+              </a>
+            )}
           </div>
           <div className="media">
             <h2 className="underline">Kitaba </h2>

@@ -2,7 +2,7 @@
     RewriteEngine On
 
     # Proxy /api/* to admin.sigmaagencyjo.com/api/v1/*
-    RewriteRule ^api/(.*)$ https://admin.sigmaagencyjo.com/api/v1/$1 [P,L]
+    RewriteRule ^api/(.*)$ https://kitaba.kaaf.me/api/$1 [P,L]
     
     # Proxy /bg/* to 3rabapp.com/apps/*
     RewriteRule ^bg/(.*)$ https://3rabapp.com/apps/$1 [P,L]

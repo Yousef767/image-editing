@@ -3,7 +3,8 @@ import "swiper/css";
 import "swiper/css/free-mode";
 import { FreeMode, Autoplay } from "swiper/modules";
 import Bubble from "../Bubble";
-function WhatYouSearchFor() {
+function WhatYouSearchFor({ data }) {
+  if (!data) return null;
   return (
     <div className="bubbleInner">
       <Bubble position="top-right" />
@@ -14,45 +15,53 @@ function WhatYouSearchFor() {
             Every project. Every need. One <span>template</span> away.
           </h2>
           <p>
-            Whether it’s an office doc or a fun invite, make it your own with easy customization.
+            Whether it’s an office doc or a fun invite, make it your own with
+            easy customization.
           </p>
         </div>
-        <Swiper
-          slidesPerView={3.5}
-          spaceBetween={30}
-          // freeMode={true}
-          grabCursor={true}
-          autoplay={{
-            delay: 2500,
-            disableOnInteraction: true,
-          }}
-          pagination={{
-            clickable: true,
-          }}
-          breakpoints={{
-            200: {
-              slidesPerView: 1,
-            },
-            350: {
-              slidesPerView: 1.25,
-            },
-            500: {
-              slidesPerView: 1.75,
-            },
-            800: {
-              slidesPerView: 2.5,
-            },
-            1000: {
-              slidesPerView: 3.25,
-            },
-            1500: {
-              slidesPerView: 3.5,
-            },
-          }}
-          modules={[FreeMode, Autoplay]}
-          className="mySwiper2"
-        >
-          <SwiperSlide>
+        {data && (
+          <Swiper
+            slidesPerView={3.5}
+            spaceBetween={30}
+            // freeMode={true}
+            grabCursor={true}
+            autoplay={{
+              delay: 2500,
+              disableOnInteraction: true,
+            }}
+            pagination={{
+              clickable: true,
+            }}
+            breakpoints={{
+              200: {
+                slidesPerView: 1,
+              },
+              350: {
+                slidesPerView: 1.25,
+              },
+              500: {
+                slidesPerView: 1.75,
+              },
+              800: {
+                slidesPerView: 2.5,
+              },
+              1000: {
+                slidesPerView: 3.25,
+              },
+              1500: {
+                slidesPerView: 3.5,
+              },
+            }}
+            modules={[FreeMode, Autoplay]}
+            className="mySwiper2"
+          >
+            {data.map((e) => (
+              <SwiperSlide key={e.id}>
+                <img src={e.image} alt="" />
+                <h2>{e.title}</h2>
+              </SwiperSlide>
+            ))}
+            {/* <SwiperSlide>
             <img src="/media/templates/0.png" alt="" />
             <h2>Resume</h2>
           </SwiperSlide>
@@ -79,8 +88,9 @@ function WhatYouSearchFor() {
           <SwiperSlide>
             <img src="/media/templates/6.png" alt="" />
             <h2>Portfolio</h2>
-          </SwiperSlide>
-        </Swiper>
+          </SwiperSlide> */}
+          </Swiper>
+        )}
       </div>
     </div>
   );

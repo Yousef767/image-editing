@@ -1,3 +1,6 @@
+import { useEffect, useState } from "react";
+import { AxiosInstance } from "../../api/axios";
+import { handleError } from "../../api/error";
 import GoTop from "../fragments/GoTop";
 import Counters from "../fragments/home/Counters";
 import Features from "../fragments/home/Features";
@@ -6,15 +9,28 @@ import NewFeatures from "../fragments/home/NewFeatures";
 import Pricing from "../fragments/home/Pricing";
 import WhatYouSearchFor from "../fragments/home/WhatYouSearchFor";
 function Home() {
+  const [data, setData] = useState(null);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await AxiosInstance.get("/home_data");
+        // console.log(res.data.data);
+        setData(res.data.data);
+      } catch (error) {
+        handleError(error);
+      }
+    };
+    fetchData();
+  }, []);
   return (
     <>
-      <GoTop/>
+      <GoTop />
       <Hero />
-      <Counters />
-      <Features/>
-      <Pricing/>
-      <NewFeatures/>
-      <WhatYouSearchFor/>
+      <Counters data={data?.settings} />
+      <Features data={data?.features} />
+      <Pricing />
+      <NewFeatures data={data?.services} />
+      <WhatYouSearchFor data={data?.features}/>
     </>
   );
 }

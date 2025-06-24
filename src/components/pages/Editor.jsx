@@ -63,6 +63,8 @@ function Editor() {
       backgroundColor: "#f5f5f5",
       width: 600,
       height: 500,
+      isDrawingMode: false, // Initially false
+      preserveObjectStacking: true, // Important for eraser
     });
     setCanvas(canvasObj);
 
@@ -90,16 +92,29 @@ function Editor() {
       setLayers(newLayers.reverse()); // Reverse to show top layer first
     };
 
+    const onPathCreated = () => {
+      saveCanvasState(canvas);
+    };
+
     canvas.on("object:added", updateLayers);
     canvas.on("object:removed", updateLayers);
     canvas.on("object:modified", updateLayers);
     canvas.on("object:moved", updateLayers);
+    canvas.on("path:created", onPathCreated);
+    console.log(
+      canvas.getObjects().map((obj) => ({
+        type: obj.type,
+        erasable: obj.erasable,
+      }))
+    );
+    console.log(fabric.version);
 
     return () => {
       canvas.off("object:added", updateLayers);
       canvas.off("object:removed", updateLayers);
       canvas.off("object:modified", updateLayers);
       canvas.off("object:moved", updateLayers);
+      canvas.off("path:created", onPathCreated);
     };
   }, [canvas]);
 
@@ -148,6 +163,7 @@ function Editor() {
         originX: "center",
         originY: "center",
         selectable: true,
+        erasable: true,
         id: `image-${Date.now()}`,
         name: "Background Image",
       });
@@ -160,61 +176,17 @@ function Editor() {
     });
   }, [canvas, imageUrl]);
 
-  // const handleFileUpload = (e) => {
-  //   const file = e.target.files[0];
-  //   if (!file) return;
-
-  //   const reader = new FileReader();
-  //   reader.onload = (event) => {
-  //     setImageUrl(event.target.result);
-  //   };
-  //   reader.readAsDataURL(file);
-  // };
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
-    if (!file || !canvas) return;
+    if (!file) return;
 
     const reader = new FileReader();
     reader.onload = (event) => {
-      fabric.Image.fromURL(event.target.result, (img) => {
-        // Calculate scaling to fit within canvas while maintaining aspect ratio
-        const maxWidth = canvas.width * 0.8; // 80% of canvas width
-        const maxHeight = canvas.height * 0.8; // 80% of canvas height
-        const scale = Math.min(
-          maxWidth / img.width,
-          maxHeight / img.height,
-          1 // Don't scale up if image is smaller
-        );
-
-        // Center the image on canvas with slight random offset
-        const left =
-          (canvas.width - img.width * scale) / 2 + (Math.random() * 40 - 20);
-        const top =
-          (canvas.height - img.height * scale) / 2 + (Math.random() * 40 - 20);
-
-        img.set({
-          left,
-          top,
-          scaleX: scale,
-          scaleY: scale,
-          originX: "center",
-          originY: "center",
-          selectable: true,
-          id: `image-${Date.now()}`,
-          name: `Image ${canvas.getObjects().length + 1}`,
-        });
-
-        canvas.add(img);
-        canvas.setActiveObject(img);
-        canvas.requestRenderAll();
-        saveCanvasState(canvas);
-      });
+      setImageUrl(event.target.result);
     };
     reader.readAsDataURL(file);
-
-    // Reset file input to allow selecting the same file again
-    e.target.value = "";
   };
+
   const cropRectRef = useRef(null);
   const isDrawing = useRef(false);
   const startX = useRef(0);
@@ -464,6 +436,7 @@ function Editor() {
           opacity: activeObject.opacity,
           shadow: activeObject.shadow,
           selectable: true,
+          erasable: true,
           id: `image-${Date.now()}`,
           name: "BG Removed Image",
         });
@@ -544,25 +517,50 @@ function Editor() {
   };
 
   const startErasing = () => {
+    if (!canvas) return;
+
     setActiveTool("erase");
-    canvas.defaultCursor = "crosshair";
-    canvas.selection = false;
+    canvas.isDrawingMode = true;
+
+    // Initialize eraser
+    canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
+    canvas.freeDrawingBrush.color = "red";
+    canvas.freeDrawingBrush.width = 30;
+
+    // Make EVERY object erasable (including images, paths, etc.)
+    canvas.getObjects().forEach((obj) => {
+      obj.set({ erasable: true });
+
+      // Handle nested objects (e.g., groups)
+      if (obj._objects) {
+        obj._objects.forEach((subObj) => subObj.set({ erasable: true }));
+      }
+    });
+
+    canvas.requestRenderAll();
+  };
+
+  const stopErasing = () => {
+    if (!canvas) return;
+
+    setActiveTool(null);
+    canvas.isDrawingMode = false;
+    canvas.renderAll();
   };
 
   const handleCanvasClick = (e) => {
     if (!canvas || !activeTool) return;
 
-    if (activeTool === "erase") {
-      const pointer = canvas.getPointer(e.e);
-      const objects = canvas.getObjects();
-
-      objects.forEach((obj) => {
-        if (obj.containsPoint(pointer)) {
-          canvas.remove(obj);
-        }
-      });
-      saveCanvasState(canvas);
-    }
+    // if (activeTool === "erase") {
+    //   const pointer = canvas.getPointer(e.e);
+    //   const objects = canvas.getObjects();
+    //   objects.forEach((obj) => {
+    //     if (obj.containsPoint(pointer)) {
+    //       canvas.remove(obj);
+    //     }
+    //   });
+    //   saveCanvasState(canvas);
+    // }
   };
 
   const handleCanvasObjectModified = () => {
@@ -698,6 +696,7 @@ function Editor() {
       left: 100,
       top: 100,
       selectable: true,
+      erasable: true,
       id: `rect-${Date.now()}`,
       name: `New Layer ${layers.length + 1}`,
     });
@@ -747,6 +746,44 @@ function Editor() {
       canvas.off("object:modified", handleCanvasObjectModified);
     };
   }, [canvas]);
+
+  const handleReplaceImage = (e) => {
+    const file = e.target.files[0];
+    // if (!file || !canvas) return;
+
+    const reader = new FileReader();
+    reader.onload = (f) => {
+      const dataUrl = f.target.result;
+
+      const activeObject = canvas.getActiveObject();
+      if (!activeObject || activeObject.type !== "image") {
+        toast.error("Please select an image to replace.");
+        return;
+      }
+
+      fabric.Image.fromURL(dataUrl, (newImg) => {
+        newImg.set({
+          left: activeObject.left,
+          top: activeObject.top,
+          scaleX: activeObject.scaleX,
+          scaleY: activeObject.scaleY,
+          angle: activeObject.angle,
+          flipX: activeObject.flipX,
+          flipY: activeObject.flipY,
+          originX: activeObject.originX,
+          originY: activeObject.originY,
+          selectable: true,
+          erasable: true,
+        });
+
+        canvas.remove(activeObject);
+        canvas.add(newImg);
+        canvas.setActiveObject(newImg);
+        canvas.renderAll();
+      });
+    };
+    reader.readAsDataURL(file);
+  };
 
   return (
     <div
@@ -868,7 +905,7 @@ function Editor() {
                     <input
                       type="file"
                       ref={fileInputRef}
-                      onChange={handleFileUpload}
+                      onChange={handleReplaceImage}
                       style={{ display: "none" }}
                       accept="image/png,image/jpg,image/jpeg"
                     />
@@ -954,11 +991,14 @@ function Editor() {
                   </button>
 
                   <button
-                    onClick={startErasing}
+                    onClick={
+                      activeTool === "erase" ? stopErasing : startErasing
+                    }
                     className={activeTool === "erase" ? "active" : ""}
                   >
                     <Erase />
-                    Erase
+
+                    {activeTool === "erase" ? "Stop" : "Erase"}
                   </button>
 
                   {/* <button

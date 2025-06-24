@@ -1,5 +1,6 @@
 import Bubble from "../Bubble";
-function NewFeatures() {
+function NewFeatures({ data }) {
+  if (!data) return null;
   return (
     <div className="bubbleInner">
       <Bubble position="top-right rotate-180" />
@@ -17,104 +18,48 @@ function NewFeatures() {
             professional results with ease.
           </p>
         </div>
-        <div className="contentBox">
-          <img src="/media/ai.png" alt="" />
-          <div className="content">
-            <div className="icon">
-              <Stars />
+        {data.map((e, i) => (
+          <div className="contentBox" key={e.id}>
+            <img src={e.image} alt="" />
+            <div className="content">
+              <div className="icon">
+                {i === 0 ? (
+                  <Stars />
+                ) : i === 1 ? (
+                  <BGX />
+                ) : i === 2 ? (
+                  <Rescale />
+                ) : (
+                  <Stars />
+                )}
+              </div>
+              <h2>{e.title}</h2>
+              <p>{e.description}</p>
+              <ul>
+                {e.points.map((e, i) => (
+                  <li key={i}>
+                    {i === 0 ? (
+                      <BrushAndPen />
+                    ) : i === 1 ? (
+                      <EditIcon />
+                    ) : i === 2 ? (
+                      <CreateIcon />
+                    ) : (
+                      <BrushAndPen />
+                    )}
+                    {e}
+                  </li>
+                ))}
+              </ul>
             </div>
-            <h2>AI Images Generator </h2>
-            <p>
-              Transform text prompts into stunning visuals with our advanced AI
-              tool. Whether you're an artist, designer, or creative thinker,
-              simply describe your idea and watch it come to life in seconds.
-            </p>
-            <ul>
-              <li>
-                <BrushAndPen />
-                Endless Creative Possibilities
-              </li>
-              <li>
-                <EditIcon />
-                Customizable Styles and Themes
-              </li>
-              <li>
-                <CreateIcon />
-                Create Images from Text Prompts
-              </li>
-            </ul>
           </div>
-        </div>
-        <div className="contentBox">
-          <img src="/media/bg.png" alt="" />
-          <div className="content">
-            <div className="icon">
-              <BGX />
-            </div>
-            <h2>AI Background Remover </h2>
-            <p>
-              The Remove Background AI feature automatically removes the
-              background from images, leaving only the subject. It provides
-              clean, accurate cut-outs with a transparent background, making it
-              easy to create professional visuals quickly and without manual
-              editing.
-            </p>
-            <ul>
-              <li>
-                <BrushAndPen />
-                Automatic Background Removal
-              </li>
-              <li>
-                <EditIcon />
-                Transparent Output
-              </li>
-              <li>
-                <CreateIcon />
-                No Need for Manual Editing
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div className="contentBox">
-          <img src="/media/rescale.png" alt="" />
-          <div className="content">
-            <div className="icon">
-              <Rescale />
-            </div>
-            <h2>AI Rescale images </h2>
-            <p>
-              The Rescale and Enhance Photos AI feature resizes images without
-              losing detail, while improving clarity, sharpness, and color for
-              better quality results. Perfect for optimizing photos for any use.
-            </p>
-            <ul>
-              <li>
-                <BrushAndPen />
-                Automatic Rescaling
-              </li>
-              <li>
-                <EditIcon />
-                Improved Clarity
-              </li>
-              <li>
-                <BrushAndPen />
-                Better Quality
-              </li>
-              <li>
-                <CreateIcon />
-                Color Enhancement
-              </li>
-            </ul>
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );
 }
 
 export default NewFeatures;
-
-
 
 function BrushAndPen() {
   return (

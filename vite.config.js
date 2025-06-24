@@ -9,9 +9,9 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "https://admin.sigmaagencyjo.com",
+        target: "https://kitaba.kaaf.me",
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, "/api/v1"),
+        rewrite: (path) => path.replace(/^\/api/, "/api"),
       },
       "/bg": {
         target: "https://3rabapp.com",

@@ -43,13 +43,23 @@ const CounterItem = ({ end, label }) => {
   );
 };
 
-function Counters() {
+function Counters({ data }) {
+  if (!data) return null; // or a loading spinner
   return (
     <div className="box counters">
-      <CounterItem end={800} label="Fonts with full-text editing capabilities" />
-      <CounterItem end={10000} label="Backgrounds and templates to start with it" />
-      <CounterItem end={15000} label="Elegant Stickers to add to your edits" />
-      <CounterItem end={30} label="Different languages" />
+      <CounterItem
+        end={data.fonts_no || 800}
+        label="Fonts with full-text editing capabilities"
+      />
+      <CounterItem
+        end={data.templates_no || 10000}
+        label="Backgrounds and templates to start with it"
+      />
+      <CounterItem
+        end={data.stickers_no || 15000}
+        label="Elegant Stickers to add to your edits"
+      />
+      <CounterItem end={data.languages_no || 30} label="Different languages" />
     </div>
   );
 }
