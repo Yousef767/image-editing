@@ -27,7 +27,7 @@ function Home() {
       <GoTop />
       <Hero />
       <Counters data={data?.settings} />
-      <Features data={data?.features} />
+      <Features data={data?.main_features} />
       <Pricing />
       <NewFeatures data={data?.services} />
       <WhatYouSearchFor data={data?.features}/>
