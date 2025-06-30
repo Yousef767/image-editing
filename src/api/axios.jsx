@@ -5,6 +5,7 @@ export const AxiosInstance = axios.create({
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
+    locale: "en",
   },
 });
 
