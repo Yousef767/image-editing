@@ -15,7 +15,7 @@ function Aside() {
       </div>
       <ul>
         <li>
-          <Link to={"##"}>
+          <Link to={"/dashboard"}>
             <Home />
             Home
           </Link>

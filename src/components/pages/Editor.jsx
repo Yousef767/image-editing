@@ -7,36 +7,37 @@ import { fabric } from "fabric";
 import * as imglyBackgroundRemoval from "@imgly/background-removal";
 
 import {
-  FaLayerGroup,
-  FaEye,
-  FaEyeSlash,
-  FaArrowUp,
-  FaArrowDown,
-} from "react-icons/fa";
-
-import { ChromePicker } from "react-color";
-import {
   Album,
+  AR,
   BG,
   BgRemove,
   Blur,
+  Color,
+  Colors,
   Contrast,
   Crop,
   Delete,
+  Duplicate,
+  EN,
   Erase,
   Fill,
+  FontLock,
+  Gradiants,
   ImageGenerator,
   Layers,
   Opacity,
   Photo,
   Redo,
   Replace,
+  Resize,
+  Shadow,
   Stickers,
   Text,
   TextArt,
   Undo,
 } from "../fragments/Editor/Icons";
 import toast from "react-hot-toast";
+import { AxiosBG } from "../../api/axios";
 
 function Editor() {
   const { active, handleActive, handleSearch } = useDashboardNav();
@@ -45,24 +46,33 @@ function Editor() {
   const [activeTool, setActiveTool] = useState(null);
   const [filterValue, setFilterValue] = useState(50);
   const [imageUrl, setImageUrl] = useState("");
-  const [showColorPicker, setShowColorPicker] = useState(false);
-  const [selectedColor, setSelectedColor] = useState("#000000");
   const [showLayersPanel, setShowLayersPanel] = useState(false);
   const [layers, setLayers] = useState([]);
   const fileInputRef = useRef(null);
   const history = useRef([]);
   const historyIndex = useRef(-1);
+
+  const [data, setData] = useState([]);
+  const fetchData = async () => {
+    try {
+      const res = await AxiosBG.get("/assets/backgrounds.json");
+      console.log(res.data);
+      setData(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
   useEffect(() => {
     setFilterValue(50);
   }, [activeTool]);
   useEffect(() => {
-    console.log(layers);
-  }, [layers]);
-  useEffect(() => {
     const canvasObj = new fabric.Canvas(canvasRef.current, {
-      backgroundColor: "#f5f5f5",
       width: 600,
       height: 500,
+      backgroundColor: "#f5f5f5",
       isDrawingMode: false, // Initially false
       preserveObjectStacking: true, // Important for eraser
     });
@@ -77,46 +87,57 @@ function Editor() {
   }, []);
 
   // Update layers when canvas objects change
-  useEffect(() => {
-    if (!canvas) return;
+useEffect(() => {
+  if (!canvas) return;
 
-    const updateLayers = () => {
-      const objects = canvas.getObjects();
-      const newLayers = objects.map((obj, index) => ({
-        id: obj.id || `layer-${Date.now()}-${index}`,
-        name: obj.name || `Layer ${objects.length - index}`,
-        visible: !obj.selectable === false, // fabric.js uses selectable for visibility
-        object: obj,
-        index: index,
-      }));
-      setLayers(newLayers.reverse()); // Reverse to show top layer first
-    };
+  const updateLayers = () => {
+    const objects = canvas.getObjects();
+    const filtered = objects.filter((obj) => {
+      if (!obj.visible || obj.opacity === 0) return false;
+      if (obj.type === "group" && (!obj._objects || obj._objects.length === 0)) return false;
+      return true;
+    });
 
-    const onPathCreated = () => {
-      saveCanvasState(canvas);
-    };
+    const newLayers = filtered.map((obj, index) => ({
+      id: obj.id || `layer-${Date.now()}-${index}`,
+      name: obj.name || `Layer ${filtered.length - index}`,
+      visible: obj.visible !== false,
+      object: obj,
+      index: index,
+    }));
 
-    canvas.on("object:added", updateLayers);
-    canvas.on("object:removed", updateLayers);
-    canvas.on("object:modified", updateLayers);
-    canvas.on("object:moved", updateLayers);
-    canvas.on("path:created", onPathCreated);
-    console.log(
-      canvas.getObjects().map((obj) => ({
-        type: obj.type,
-        erasable: obj.erasable,
-      }))
-    );
-    console.log(fabric.version);
+    setLayers(newLayers.reverse()); // Top layer first
+  };
 
-    return () => {
-      canvas.off("object:added", updateLayers);
-      canvas.off("object:removed", updateLayers);
-      canvas.off("object:modified", updateLayers);
-      canvas.off("object:moved", updateLayers);
-      canvas.off("path:created", onPathCreated);
-    };
-  }, [canvas]);
+  const onPathCreated = () => {
+    saveCanvasState(canvas);
+  };
+
+  const cleanEmptyGroups = (e) => {
+    const obj = e.target;
+    if (obj?.type === "group" && (!obj._objects || obj._objects.length === 0)) {
+      canvas.remove(obj);
+      canvas.requestRenderAll();
+    }
+  };
+
+  canvas.on("object:modified", cleanEmptyGroups);
+  canvas.on("object:added", updateLayers);
+  canvas.on("object:removed", updateLayers);
+  canvas.on("object:modified", updateLayers);
+  canvas.on("object:moved", updateLayers);
+  canvas.on("path:created", onPathCreated);
+
+  return () => {
+    canvas.off("object:modified", cleanEmptyGroups);
+    canvas.off("object:added", updateLayers);
+    canvas.off("object:removed", updateLayers);
+    canvas.off("object:modified", updateLayers);
+    canvas.off("object:moved", updateLayers);
+    canvas.off("path:created", onPathCreated);
+  };
+}, [canvas]);
+
 
   const saveCanvasState = (canvas) => {
     const state = JSON.stringify(canvas);
@@ -271,22 +292,16 @@ function Editor() {
 
     const cropRect = cropRectRef.current;
 
-    // Get the original image dimensions (accounting for any previous crop)
     const originalWidth = image.width + (image.cropX || 0);
     const originalHeight = image.height + (image.cropY || 0);
 
-    // Calculate the visible image bounds on canvas
     const imageLeft = image.left - (image.width * image.scaleX) / 2;
     const imageTop = image.top - (image.height * image.scaleY) / 2;
-    const imageRight = imageLeft + image.width * image.scaleX;
-    const imageBottom = imageTop + image.height * image.scaleY;
 
-    // Calculate crop coordinates relative to the ORIGINAL image
     const cropX =
       (cropRect.left - imageLeft) / image.scaleX + (image.cropX || 0);
     const cropY = (cropRect.top - imageTop) / image.scaleY + (image.cropY || 0);
 
-    // Ensure we don't crop outside the original image bounds
     const cropWidth = Math.min(
       cropRect.width / image.scaleX,
       originalWidth - cropX
@@ -296,7 +311,6 @@ function Editor() {
       originalHeight - cropY
     );
 
-    // Create new cropped image
     const cropped = new fabric.Image(image.getElement(), {
       left: cropRect.left + cropRect.width / 2,
       top: cropRect.top + cropRect.height / 2,
@@ -315,13 +329,11 @@ function Editor() {
       name: "Cropped Image",
     });
 
-    // Clean up
     canvas.remove(image);
     canvas.remove(cropRect);
     cropRectRef.current = null;
     isDrawing.current = false;
 
-    // Reset canvas state
     canvas.selection = true;
     canvas.defaultCursor = "default";
     canvas.forEachObject((obj) => {
@@ -344,12 +356,10 @@ function Editor() {
   const startCropping = () => {
     if (!canvas) return;
 
-    // First clean up any existing listeners
     canvas.off("mouse:down", handleCropMouseDown);
     canvas.off("mouse:move", handleCropMouseMove);
     canvas.off("mouse:up", handleCropMouseUp);
 
-    // Set up crop mode
     setActiveTool("crop");
     canvas.selection = false;
     canvas.defaultCursor = "crosshair";
@@ -360,7 +370,6 @@ function Editor() {
       obj.evented = false;
     });
 
-    // Add NEW listeners
     canvas.on("mouse:down", handleCropMouseDown);
     canvas.on("mouse:move", handleCropMouseMove);
     canvas.on("mouse:up", handleCropMouseUp);
@@ -370,57 +379,26 @@ function Editor() {
 
   const [isRemovingBg, setIsRemovingBg] = useState(false);
 
-  // async function generateDALLEImage(prompt) {
-  //   const response = await fetch(
-  //     "https://api.openai.com/v1/images/generations",
-  //     {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Authorization: `Bearer YOUR_OPENAI_KEY`,
-  //       },
-  //       body: JSON.stringify({
-  //         prompt: prompt,
-  //         n: 1,
-  //         size: "1024x1024",
-  //       }),
-  //     }
-  //   );
-  //   const data = await response.json();
-  //   console.log(data);
-
-  //   return data.data[0].url; // Returns image URL
-  // }
-  // useEffect(() => {
-  //   generateDALLEImage("cat hugs a dog");
-  // }, []);
-
   const removeBackground = async () => {
     if (!canvas || !canvas.getActiveObject()) {
-      toast.error("Please select an image first");
+      toast.error("Please select an image to remove background");
       return;
     }
 
     const activeObject = canvas.getActiveObject();
-    // if (!activeObject || !(activeObject instanceof fabric.Image)) {
-    //   alert("Please select an image to remove background");
-    //   return;
-    // }
+    if (!(activeObject instanceof fabric.Image)) {
+      toast.error("Please select an image to remove background");
+      return;
+    }
 
     try {
       setIsRemovingBg(true);
 
-      // Get the image source
       const imageSrc = activeObject.getSrc();
-
-      // Remove background
       const blob = await imglyBackgroundRemoval.removeBackground(imageSrc);
       const processedUrl = URL.createObjectURL(blob);
-      console.log(processedUrl);
 
-      // Replace the image with the processed one
       fabric.Image.fromURL(processedUrl, (img) => {
-        // Preserve all relevant properties
         img.set({
           left: activeObject.left,
           top: activeObject.top,
@@ -441,18 +419,15 @@ function Editor() {
           name: "BG Removed Image",
         });
 
-        // If the original had filters, copy and apply them
         if (activeObject.filters?.length) {
           img.filters = [...activeObject.filters];
           img.applyFilters();
         }
 
-        // If the original had clipPath, copy it
         if (activeObject.clipPath) {
           img.clipPath = activeObject.clipPath;
         }
 
-        // Optional: keep same width/height (if needed)
         img.set({
           width: activeObject.width,
           height: activeObject.height,
@@ -480,40 +455,9 @@ function Editor() {
     if (activeObject) {
       canvas.remove(activeObject);
       saveCanvasState(canvas);
+    }else{
+      toast.error('Select object to delete')
     }
-  };
-
-  const fillWithColor = () => {
-    if (!canvas) return;
-
-    const activeObject = canvas.getActiveObject();
-
-    if (activeObject) {
-      activeObject.set("fill", selectedColor);
-    } else {
-      const rect = new fabric.Rect({
-        left: 0,
-        top: 0,
-        width: canvas.width,
-        height: canvas.height,
-        fill: selectedColor,
-        selectable: false,
-        evented: false,
-        hasControls: false,
-      });
-      canvas.add(rect);
-    }
-
-    canvas.renderAll();
-    saveCanvasState(canvas);
-    // if (activeObject) {
-    //   activeObject.set("fill", selectedColor);
-    // } else {
-    //   toast.error("Select object to fill");
-    // }
-
-    // canvas.renderAll();
-    // saveCanvasState(canvas);
   };
 
   const startErasing = () => {
@@ -522,16 +466,13 @@ function Editor() {
     setActiveTool("erase");
     canvas.isDrawingMode = true;
 
-    // Initialize eraser
     canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
-    canvas.freeDrawingBrush.color = "red";
+    canvas.freeDrawingBrush.color = "#f5f5f5";
     canvas.freeDrawingBrush.width = 30;
 
-    // Make EVERY object erasable (including images, paths, etc.)
     canvas.getObjects().forEach((obj) => {
       obj.set({ erasable: true });
 
-      // Handle nested objects (e.g., groups)
       if (obj._objects) {
         obj._objects.forEach((subObj) => subObj.set({ erasable: true }));
       }
@@ -546,21 +487,6 @@ function Editor() {
     setActiveTool(null);
     canvas.isDrawingMode = false;
     canvas.renderAll();
-  };
-
-  const handleCanvasClick = (e) => {
-    if (!canvas || !activeTool) return;
-
-    // if (activeTool === "erase") {
-    //   const pointer = canvas.getPointer(e.e);
-    //   const objects = canvas.getObjects();
-    //   objects.forEach((obj) => {
-    //     if (obj.containsPoint(pointer)) {
-    //       canvas.remove(obj);
-    //     }
-    //   });
-    //   saveCanvasState(canvas);
-    // }
   };
 
   const handleCanvasObjectModified = () => {
@@ -647,65 +573,6 @@ function Editor() {
     };
   };
 
-  // Layer management functions
-  const toggleLayerVisibility = (layerId) => {
-    const objects = canvas.getObjects();
-    const layer = objects.find((obj) => obj.id === layerId);
-    if (layer) {
-      layer.set("selectable", !layer.selectable);
-      layer.set("evented", !layer.evented);
-      canvas.renderAll();
-      saveCanvasState(canvas);
-    }
-  };
-
-  const selectLayer = (layerId) => {
-    const objects = canvas.getObjects();
-    const layer = objects.find((obj) => obj.id === layerId);
-    if (layer) {
-      canvas.setActiveObject(layer);
-      canvas.renderAll();
-    }
-  };
-
-  const moveLayerUp = (layerId) => {
-    const objects = canvas.getObjects();
-    const layer = objects.find((obj) => obj.id === layerId);
-    if (layer) {
-      layer.bringForward();
-      canvas.renderAll();
-      saveCanvasState(canvas);
-    }
-  };
-
-  const moveLayerDown = (layerId) => {
-    const objects = canvas.getObjects();
-    const layer = objects.find((obj) => obj.id === layerId);
-    if (layer) {
-      layer.sendBackwards();
-      canvas.renderAll();
-      saveCanvasState(canvas);
-    }
-  };
-
-  const addNewLayer = () => {
-    const rect = new fabric.Rect({
-      width: 100,
-      height: 100,
-      fill: "#ff0000",
-      left: 100,
-      top: 100,
-      selectable: true,
-      erasable: true,
-      id: `rect-${Date.now()}`,
-      name: `New Layer ${layers.length + 1}`,
-    });
-    canvas.add(rect);
-    canvas.setActiveObject(rect);
-    canvas.renderAll();
-    saveCanvasState(canvas);
-  };
-
   const applyFilter = (filterType) => {
     if (!canvas || !canvas.getActiveObject()) {
       toast.error("Please select object first");
@@ -714,7 +581,6 @@ function Editor() {
 
     const activeObject = canvas.getActiveObject();
 
-    // Remove existing filters of the same type
     activeObject.filters =
       activeObject.filters?.filter((f) => !f.type.includes(filterType)) || [];
 
@@ -785,6 +651,274 @@ function Editor() {
     reader.readAsDataURL(file);
   };
 
+  const toolbarButtons = [
+    {
+      name: "Replace",
+      icon: <Replace />,
+      extra: (
+        <input
+          type="file"
+          ref={fileInputRef}
+          id="f2"
+          onChange={handleReplaceImage}
+          style={{ display: "none" }}
+          accept="image/png,image/jpg,image/jpeg"
+        />
+      ),
+    },
+    {
+      name: "Delete",
+      icon: <Delete />,
+      onClick: deleteSelected,
+    },
+    {
+      name: activeTool === "crop" ? "Apply Crop" : "Crop",
+      icon: <Crop />,
+      onClick:
+        activeTool === "crop"
+          ? applyCrop
+          : () => {
+              setActiveTool("crop");
+              startCropping();
+            },
+      className: activeTool === "crop" ? "active" : "",
+    },
+    {
+      name: isRemovingBg ? "Processing..." : "BG Remover",
+      icon: <BgRemove />,
+      onClick: removeBackground,
+      disabled: isRemovingBg,
+    },
+    {
+      name: "Fill",
+      icon: <Fill />,
+      onClick: () => {
+        setActiveTool("fill");
+        setActiveButton("Background");
+      },
+      // extra: showColorPicker && (
+      //   <div className="color-picker-popup">
+      //     <ChromePicker
+      //       color={selectedColor}
+      //       onChangeComplete={(color) => {
+      //         const { r, g, b, a } = color.rgb;
+      //         setSelectedColor(`rgba(${r}, ${g}, ${b}, ${a})`);
+      //       }}
+      //     />
+      //     <button className="btn smallBtn" onClick={fillWithColor}>
+      //       Apply
+      //     </button>
+      //   </div>
+      // ),
+    },
+    {
+      name: "Opacity",
+      icon: <Opacity />,
+      onClick: () => setActiveTool(activeTool === "opacity" ? null : "opacity"),
+      className: activeTool === "opacity" ? "active" : "",
+    },
+    {
+      name: "Contrast",
+      icon: <Contrast />,
+      onClick: () =>
+        setActiveTool(activeTool === "contrast" ? null : "contrast"),
+      className: activeTool === "contrast" ? "active" : "",
+    },
+    {
+      name: "Blur",
+      icon: <Blur />,
+      onClick: () => setActiveTool(activeTool === "blur" ? null : "blur"),
+      className: activeTool === "blur" ? "active" : "",
+    },
+    {
+      name: activeTool === "erase" ? "Stop" : "Erase",
+      icon: <Erase />,
+      onClick: activeTool === "erase" ? stopErasing : startErasing,
+      className: activeTool === "erase" ? "active" : "",
+    },
+  ];
+  const toolbarTextButtons = [
+    {
+      name: "English",
+      onClick: () => {
+        const text = new fabric.IText("Type here...", {
+          left: 100,
+          top: 100,
+          fontFamily: "Arial",
+          fontSize: 24,
+          textAlign: "left",
+          fill: "#000",
+          direction: "ltr",
+          id: `text-${Date.now()}`,
+        });
+        canvas.add(text);
+        canvas.setActiveObject(text);
+        canvas.requestRenderAll();
+        saveCanvasState(canvas);
+        setActiveTool("English");
+      },
+      icon: <EN />,
+    },
+    {
+      name: "Arabic",
+      onClick: () => {
+        const text = new fabric.IText("اكتب هنا...", {
+          left: 100,
+          top: 100,
+          fontFamily: "Arial",
+          fontSize: 24,
+          textAlign: "right",
+          fill: "#000",
+          direction: "rtl",
+          id: `text-${Date.now()}`,
+        });
+        canvas.add(text);
+        canvas.setActiveObject(text);
+        canvas.requestRenderAll();
+        saveCanvasState(canvas);
+        setActiveTool("Arabic");
+      },
+      icon: <AR />,
+    },
+    {
+      name: "Colors",
+      onClick: () => setActiveTool("Colors"),
+      icon: <Colors />,
+    },
+    // {
+    //   name: "Resize",
+    //   onClick: () => setActiveTool("Resize"),
+    //   icon: <Resize />,
+    // },
+    {
+      name: "Shadow",
+      onClick: () =>
+        activeTool === "Shadow" ? setActiveTool(null) : setActiveTool("Shadow"),
+      icon: <Shadow />,
+    },
+    {
+      name: "Duplicate",
+      onClick: () => {
+        const activeObject = canvas?.getActiveObject();
+        if (activeObject) {
+          activeObject.clone((cloned) => {
+            cloned.set({
+              left: activeObject.left + 10,
+              top: activeObject.top + 10,
+              evented: true,
+            });
+            if (cloned.canvas) cloned.canvas = null; // Detach from any previous canvas
+            canvas.add(cloned);
+            canvas.setActiveObject(cloned);
+            canvas.requestRenderAll();
+            saveCanvasState(canvas);
+          });
+        } else {
+          toast.error("Please select object to duplicate");
+        }
+      },
+      icon: <Duplicate />,
+    },
+    {
+      name: "Delete",
+      onClick: deleteSelected,
+      icon: <Delete />,
+    },
+  ];
+  const shadowXRef = useRef(5);
+  const shadowYRef = useRef(5);
+
+  const [activeButton, setActiveButton] = useState(null);
+
+  const buttons = [
+    { name: "Background", icon: <BG />, hasFill: true },
+    { name: "Image Generator", icon: <ImageGenerator />, hasFill: true },
+    { name: "Text", icon: <Text />, hasFill: true },
+    { name: "Stickers", icon: <Stickers />, hasFill: false },
+    { name: "TextArt", icon: <TextArt />, hasFill: false },
+    { name: "Photo", icon: <Photo />, hasFill: false },
+    { name: "Album", icon: <Album />, hasFill: false },
+  ];
+
+  const handleButtonClick = (buttonName) => {
+    setActiveButton((prev) => (prev === buttonName ? null : buttonName));
+    if (activeTool === "fill") {
+      setActiveTool(null);
+    }
+    if (buttonName === "Background") {
+      setActiveTool(null);
+    }
+
+    // if (buttonName === "Text") {
+    //   setActiveTool("English"); // Ensures default toolbar (not en/ar/color directly)
+    // }
+  };
+
+  const handleColorClick = (color) => {
+    if (!canvas) return;
+
+    const activeObject = canvas.getActiveObject();
+    if (activeObject) {
+      activeObject.set("fill", color);
+      canvas.renderAll();
+    } else {
+      canvas.setBackgroundColor(color, () => canvas.renderAll());
+    }
+  };
+
+  const directionToCoords = (direction) => {
+    const map = {
+      "to top": [0.5, 1, 0.5, 0],
+      "to bottom": [0.5, 0, 0.5, 1],
+      "to left": [1, 0.5, 0, 0.5],
+      "to right": [0, 0.5, 1, 0.5],
+      "to top left": [1, 1, 0, 0],
+      "to top right": [0, 1, 1, 0],
+      "to bottom left": [1, 0, 0, 1],
+      "to bottom right": [0, 0, 1, 1],
+    };
+
+    if (map[direction]) return map[direction];
+
+    const angle = parseFloat(direction);
+    const rad = (angle * Math.PI) / 180;
+    const x1 = 0.5 - 0.5 * Math.cos(rad);
+    const y1 = 0.5 + 0.5 * Math.sin(rad);
+    const x2 = 0.5 + 0.5 * Math.cos(rad);
+    const y2 = 0.5 - 0.5 * Math.sin(rad);
+    return [x1, y1, x2, y2];
+  };
+
+  const handleGradientClick = ({ colors, direction }) => {
+    if (!canvas) return;
+
+    const width = canvas.width;
+    const height = canvas.height;
+
+    const [x1, y1, x2, y2] = directionToCoords(direction).map((val, i) =>
+      i % 2 === 0 ? val * width : val * height
+    );
+
+    const gradient = new fabric.Gradient({
+      type: "linear",
+      gradientUnits: "pixels",
+      coords: { x1, y1, x2, y2 },
+      colorStops: [
+        { offset: 0, color: colors[0] },
+        { offset: 1, color: colors[1] },
+      ],
+    });
+
+    const activeObject = canvas.getActiveObject();
+
+    if (activeObject) {
+      activeObject.set("fill", gradient);
+      canvas.requestRenderAll();
+    } else {
+      canvas.setBackgroundColor(gradient, () => canvas.renderAll());
+    }
+  };
+
   return (
     <div
       className={
@@ -802,218 +936,93 @@ function Editor() {
         <div className="editorBody">
           <div className="sideTools">
             <div className="mainSide">
-              <button className="fill active">
-                <div className="svg">
-                  <BG />
-                </div>
-                Background
-              </button>
-              <button className="fill ">
-                <div className="svg">
-                  <ImageGenerator />
-                </div>
-                Image Generator
-              </button>
-              <button className="fill ">
-                <div className="svg">
-                  <Text />
-                </div>
-                Text
-              </button>
-              <button>
-                <div className="svg">
-                  <Stickers />
-                </div>
-                Stickers
-              </button>
-              <button>
-                <div className="svg">
-                  <TextArt />
-                </div>
-                TextArt
-              </button>
-              <button>
-                <div className="svg">
-                  <Photo />
-                </div>
-                Photo
-              </button>
-              <button>
-                <div className="svg">
-                  <Album />
-                </div>
-                Album
-              </button>
+              {buttons.map((button) => (
+                <button
+                  key={button.name}
+                  className={`${button.hasFill ? "fill" : ""} ${
+                    activeButton === button.name ? "active" : ""
+                  }`}
+                  onClick={() => handleButtonClick(button.name)}
+                >
+                  <div className="svg">{button.icon}</div>
+                  {button.name}
+                </button>
+              ))}
             </div>
-            <div className="showSide">
-              <label className="btn btn2 btn3" htmlFor="file">
-                Upload
-              </label>
-              <input
-                type="file"
-                hidden
-                id="file"
-                name="file"
-                ref={fileInputRef}
-                onChange={handleFileUpload}
-                style={{ display: "none" }}
-                accept="image/png,image/jpg,image/jpeg"
+            {activeButton === "Background" && activeTool === null && (
+              <BackroundSide
+                fileInputRef={fileInputRef}
+                handleFileUpload={handleFileUpload}
               />
-              <div className="recent recent3">
-                <p>Recent designs</p>
-                <div className="recent-designs">
-                  <Link to={"##"}>
-                    <img src="/media/recent.png" alt="" />
-                  </Link>
-                  <Link to={"##"}>
-                    <img src="/media/recent.png" alt="" />
-                  </Link>
-                  <Link to={"##"}>
-                    <img src="/media/recent.png" alt="" />
-                  </Link>
-                  <Link to={"##"}>
-                    <img src="/media/recent.png" alt="" />
-                  </Link>
-                </div>
-              </div>
-              <div className="recent recent3">
-                <p>Recommended designs </p>
-                <div className="recent-designs">
-                  <Link to={"##"}>
-                    <img src="/media/recent.png" alt="" />
-                  </Link>
-                  <Link to={"##"}>
-                    <img src="/media/recent.png" alt="" />
-                  </Link>
-                  <Link to={"##"}>
-                    <img src="/media/recent.png" alt="" />
-                  </Link>
-                  <Link to={"##"}>
-                    <img src="/media/recent.png" alt="" />
-                  </Link>
-                </div>
-              </div>
-            </div>
+            )}
+            {activeButton === "Background" && activeTool === "fill" && (
+              <BackroundSideFill
+                fileInputRef={fileInputRef}
+                handleFileUpload={handleFileUpload}
+                handleColorClick={handleColorClick}
+                handleGradientClick={handleGradientClick}
+              />
+            )}
+            {activeTool === "English" && <EnFonts />}
+            {activeTool === "Arabic" && <ArFonts />}
+            {activeTool === "Colors" && (
+              <TextColors
+                handleColorClick={handleColorClick}
+                handleGradientClick={handleGradientClick}
+              />
+            )}
           </div>
           <div className="image-editor">
             <div className="mainTools">
               <div className="tools">
                 <div className="toolbar">
-                  <button onClick={() => fileInputRef.current.click()}>
-                    <Replace />
-                    Replace
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      onChange={handleReplaceImage}
-                      style={{ display: "none" }}
-                      accept="image/png,image/jpg,image/jpeg"
-                    />
-                  </button>
-
-                  <button onClick={deleteSelected}>
-                    <Delete />
-                    Delete
-                  </button>
-
-                  <button
-                    onClick={activeTool === "crop" ? applyCrop : startCropping}
-                    className={activeTool === "crop" ? "active" : ""}
-                  >
-                    <Crop />
-                    {activeTool === "crop" ? "Apply Crop" : "Crop"}
-                  </button>
-                  {/* <button onClick={applyCrop}>Apply Crop</button> */}
-
-                  <button onClick={removeBackground} disabled={isRemovingBg}>
-                    <BgRemove />
-                    {isRemovingBg ? "Processing..." : "BG Remover"}
-                  </button>
-
-                  <div className="color-picker-container">
-                    <button
-                      onClick={() => setShowColorPicker(!showColorPicker)}
-                    >
-                      <Fill />
-                      Fill
-                    </button>
-                    {showColorPicker && (
-                      <div className="color-picker-popup">
-                        <ChromePicker
-                          color={selectedColor}
-                          onChangeComplete={(color) => {
-                            const { r, g, b, a } = color.rgb;
-                            setSelectedColor(`rgba(${r}, ${g}, ${b}, ${a})`);
-                          }}
-                        />
+                  {activeButton === "Text" && (
+                    <>
+                      {toolbarTextButtons.map((button, index) => (
                         <button
-                          className="btn smallBtn"
-                          onClick={() => fillWithColor()}
+                          key={index}
+                          onClick={button?.onClick}
+                          className={button.name === activeTool ? "active" : ""}
+                          disabled={button.disabled}
                         >
-                          Apply
+                          {button?.icon}
+                          {button.name}
+                          {button.extra}
                         </button>
+                      ))}
+                    </>
+                  )}
+
+                  {activeButton !== "Text" &&
+                    toolbarButtons.map((button, index) => (
+                      <div
+                        key={index}
+                        className={
+                          button.name === "Fill" ? "color-picker-container" : ""
+                        }
+                      >
+                        {button.name === "Replace" ? (
+                          <label
+                            htmlFor="f2"
+                            className={button.className}
+                            disabled={button.disabled}
+                          >
+                            {button.icon}
+                            {button.name}
+                          </label>
+                        ) : (
+                          <button
+                            onClick={button?.onClick}
+                            className={button.className}
+                            disabled={button.disabled}
+                          >
+                            {button.icon}
+                            {button.name}
+                          </button>
+                        )}
+                        {button.extra}
                       </div>
-                    )}
-                  </div>
-
-                  <button
-                    onClick={() => {
-                      setActiveTool(
-                        activeTool === "opacity" ? null : "opacity"
-                      );
-                    }}
-                    className={activeTool === "opacity" ? "active" : ""}
-                  >
-                    <Opacity />
-                    Opacity
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      setActiveTool(
-                        activeTool === "contrast" ? null : "contrast"
-                      );
-                    }}
-                    className={activeTool === "contrast" ? "active" : ""}
-                  >
-                    <Contrast />
-                    Contrast
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      setActiveTool(activeTool === "blur" ? null : "blur");
-                    }}
-                    className={activeTool === "blur" ? "active" : ""}
-                  >
-                    <Blur />
-                    Blur
-                  </button>
-
-                  <button
-                    onClick={
-                      activeTool === "erase" ? stopErasing : startErasing
-                    }
-                    className={activeTool === "erase" ? "active" : ""}
-                  >
-                    <Erase />
-
-                    {activeTool === "erase" ? "Stop" : "Erase"}
-                  </button>
-
-                  {/* <button
-                  onClick={() => setShowLayersPanel(!showLayersPanel)}
-                  className={showLayersPanel ? "active" : "button"}
-                >
-                  <FaLayerGroup /> Layers
-                </button>
-
-                <button onClick={addNewLayer}>
-                  <FaPlus /> Add Layer
-                </button>
-                <button onClick={downloadImage}>
-                  <FaDownload /> Download
-                </button> */}
+                    ))}
                 </div>
                 <div className="redoundo">
                   <button onClick={undo} disabled={historyIndex.current <= 0}>
@@ -1029,7 +1038,9 @@ function Editor() {
                     <Redo />
                   </button>
                 </div>
-                {activeTool && activeTool !== "crop" && (
+                {activeTool === "opacity" ||
+                activeTool === "blur" ||
+                activeTool === "contrast" ? (
                   <div className="filter-control">
                     <div className="tandv">
                       <span>{activeTool}</span>
@@ -1049,16 +1060,71 @@ function Editor() {
                       Apply
                     </button>
                   </div>
+                ) : null}
+
+                {activeTool === "Shadow" && (
+                  <form
+                    className="filter-control"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      const obj = canvas.getActiveObject();
+                      if (obj) {
+                        obj.set("shadow", {
+                          color: "rgba(0,0,0,0.3)",
+                          // blur: 5,
+                          offsetX: parseInt(shadowXRef.current.value || 0),
+                          offsetY: parseInt(shadowYRef.current.value || 0),
+                        });
+                        canvas.requestRenderAll();
+                        saveCanvasState(canvas);
+                        setActiveTool(null);
+                      } else {
+                        toast.error("Please select object first");
+                      }
+                    }}
+                  >
+                    <div className="tandv">
+                      <span>Shadow X</span>
+                      <span className="shadowXValue">5px</span>
+                      <input
+                        type="range"
+                        min="-100"
+                        max="100"
+                        defaultValue="5"
+                        ref={shadowXRef}
+                        onInput={(e) => {
+                          const el = document.querySelector(".shadowXValue");
+                          if (el) el.textContent = `${e.target.value}px`;
+                        }}
+                      />
+                    </div>
+
+                    <div className="tandv">
+                      <span>Shadow Y</span>
+                      <span className="shadowYValue">5px</span>
+                      <input
+                        type="range"
+                        min="-100"
+                        max="100"
+                        defaultValue="5"
+                        ref={shadowYRef}
+                        onInput={(e) => {
+                          const el = document.querySelector(".shadowYValue");
+                          if (el) el.textContent = `${e.target.value}px`;
+                        }}
+                      />
+                    </div>
+
+                    <button type="submit" className="btn btnsmall">
+                      Apply Shadow
+                    </button>
+                  </form>
                 )}
               </div>
-
               <div className="canvas-container">
                 <canvas
                   className={isRemovingBg ? "isRemovingBg" : ""}
                   ref={canvasRef}
-                  width={800}
-                  height={600}
-                  onClick={handleCanvasClick}
                 />
               </div>
             </div>
@@ -1156,3 +1222,273 @@ function Editor() {
 }
 
 export default Editor;
+
+function BackroundSide({ fileInputRef, handleFileUpload }) {
+  return (
+    <div className="showSide">
+      <label className="btn btn2 btn3" htmlFor="file">
+        Upload
+      </label>
+      <input
+        type="file"
+        hidden
+        id="file"
+        name="file"
+        ref={fileInputRef}
+        onChange={handleFileUpload}
+        style={{
+          display: "none",
+        }}
+        accept="image/png,image/jpg,image/jpeg"
+      />
+      <div className="recent recent3">
+        <p>Recent designs</p>
+        <div className="recent-designs">
+          <Link to={"##"}>
+            <img src="/media/recent.png" alt="" />
+          </Link>
+          <Link to={"##"}>
+            <img src="/media/recent.png" alt="" />
+          </Link>
+          <Link to={"##"}>
+            <img src="/media/recent.png" alt="" />
+          </Link>
+          <Link to={"##"}>
+            <img src="/media/recent.png" alt="" />
+          </Link>
+        </div>
+      </div>
+      <div className="recent recent3">
+        <p>Recommended designs </p>
+        <div className="recent-designs">
+          <Link to={"##"}>
+            <img src="/media/recent.png" alt="" />
+          </Link>
+          <Link to={"##"}>
+            <img src="/media/recent.png" alt="" />
+          </Link>
+          <Link to={"##"}>
+            <img src="/media/recent.png" alt="" />
+          </Link>
+          <Link to={"##"}>
+            <img src="/media/recent.png" alt="" />
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BackroundSideFill({
+  fileInputRef,
+  handleFileUpload,
+  handleColorClick,
+  handleGradientClick,
+}) {
+  const gradients = [
+    { colors: ["#218293", "#03464c"], direction: "to bottom left" },
+    { colors: ["#218293", "#03464c"], direction: "145deg" },
+    { colors: ["#218293", "#03464c"], direction: "to left" },
+    { colors: ["#ff0099", "#ff6600"], direction: "to top right" },
+    { colors: ["#1abc9c", "#16a085"], direction: "90deg" },
+    { colors: ["#000", "#fff"], direction: "to left" },
+  ];
+
+  return (
+    <div className="showSide">
+      <label className="btn btn2 btn3" htmlFor="file">
+        Upload
+      </label>
+      <input
+        type="file"
+        hidden
+        id="file"
+        name="file"
+        ref={fileInputRef}
+        onChange={handleFileUpload}
+        style={{
+          display: "none",
+        }}
+        accept="image/png,image/jpg,image/jpeg"
+      />
+      <div className="colors">
+        <div className="colorInner">
+          <p>
+            <Color />
+            Colors
+          </p>
+          <div className="cols">
+            {[
+              "#ff0099",
+              "#34b3f1",
+              "#f39c12",
+              "#9b59b6",
+              "#2ecc71",
+              "#e74c3c",
+              "#1abc9c",
+              "#34495e",
+              "#ffcc00",
+              "#e67e22",
+            ].map((color, index) => (
+              <span
+                key={index}
+                style={{ backgroundColor: color }}
+                onClick={() => handleColorClick(color)}
+              ></span>
+            ))}
+          </div>
+        </div>
+        <div className="colorInner">
+          <p>
+            <Gradiants />
+            Gradiants
+          </p>
+          <div className="cols">
+            <div className="cols">
+              {gradients.map((g, index) => (
+                <span
+                  key={index}
+                  style={{
+                    backgroundImage: `linear-gradient(${g.direction}, ${g.colors[0]}, ${g.colors[1]})`,
+                  }}
+                  onClick={() => handleGradientClick(g)}
+                ></span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function EnFonts() {
+  return (
+    <div className="showSide">
+      <h3>English fonts</h3>
+      <div className="textcat">
+        <h4>Category name</h4>
+        <div className="textbtns">
+          <button>Font name</button>
+          <button>Font name</button>
+          <button>
+            Font name <FontLock />
+          </button>
+          <button>
+            Font name <FontLock />
+          </button>
+        </div>
+      </div>
+      <div className="textcat">
+        <h4>Category name</h4>
+        <div className="textbtns">
+          <button>Font name</button>
+          <button>Font name</button>
+          <button>
+            Font name <FontLock />
+          </button>
+          <button>
+            Font name <FontLock />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ArFonts() {
+  return (
+    <div className="showSide">
+      <h3>Arabic fonts</h3>
+      <div className="textcat ar">
+        <h4>نوع الخط</h4>
+        <div className="textbtns ar">
+          <button>اسم الخط</button>
+          <button>اسم الخط</button>
+          <button>
+            اسم الخط <FontLock />
+          </button>
+          <button>
+            اسم الخط <FontLock />
+          </button>
+        </div>
+      </div>
+      <div className="textcat ar">
+        <h4>نوع الخط</h4>
+        <div className="textbtns ar">
+          <button>اسم الخط</button>
+          <button>اسم الخط</button>
+          <button>
+            اسم الخط <FontLock />
+          </button>
+          <button>
+            اسم الخط <FontLock />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TextColors({ handleColorClick, handleGradientClick }) {
+  const gradients = [
+    { colors: ["#218293", "#03464c"], direction: "to bottom left" },
+    { colors: ["#218293", "#03464c"], direction: "145deg" },
+    { colors: ["#218293", "#03464c"], direction: "to left" },
+    { colors: ["#ff0099", "#ff6600"], direction: "to top right" },
+    { colors: ["#1abc9c", "#16a085"], direction: "90deg" },
+    { colors: ["#000", "#fff"], direction: "to left" },
+  ];
+
+  return (
+    <div className="showSide">
+      <div className="colors">
+        <div className="colorInner">
+          <p>
+            <Color />
+            Colors
+          </p>
+          <div className="cols">
+            {[
+              "#ff0099",
+              "#34b3f1",
+              "#f39c12",
+              "#9b59b6",
+              "#2ecc71",
+              "#e74c3c",
+              "#1abc9c",
+              "#34495e",
+              "#ffcc00",
+              "#e67e22",
+            ].map((color, index) => (
+              <span
+                key={index}
+                style={{ backgroundColor: color }}
+                onClick={() => handleColorClick(color)}
+              ></span>
+            ))}
+          </div>
+        </div>
+        <div className="colorInner">
+          <p>
+            <Gradiants />
+            Gradiants
+          </p>
+          <div className="cols">
+            <div className="cols">
+              {gradients.map((g, index) => (
+                <span
+                  key={index}
+                  style={{
+                    backgroundImage: `linear-gradient(${g.direction}, ${g.colors[0]}, ${g.colors[1]})`,
+                  }}
+                  onClick={() => handleGradientClick(g)}
+                ></span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

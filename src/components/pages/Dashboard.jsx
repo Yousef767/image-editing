@@ -1,25 +1,9 @@
 import { Link } from "react-router-dom";
 import Aside from "../fragments/dashboard/Aside";
-import { AxiosBG } from "../../api/axios";
-import { useEffect } from "react";
-import { useState } from "react";
 import { useDashboardNav } from "../../hooks/DashboardNavHook";
 import { DashboardNav } from "../fragments/dashboard/DashboardNav";
 
 function Dashboard() {
-  const [data, setData] = useState([]);
-  const fetchData = async () => {
-    try {
-      const res = await AxiosBG.get("/assets/backgrounds.json");
-      console.log(res.data);
-      setData(res.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   const { active, handleActive, handleSearch } = useDashboardNav();
 
