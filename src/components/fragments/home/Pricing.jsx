@@ -40,7 +40,7 @@ function Pricing() {
           {data.map((e) => (
             <div className="plan glow" key={e.id}>
               <h2>{e.title}</h2>
-              <span>{e.title}</span>
+              {/* <span>{e.title}</span> */}
               <h3>{e.price}</h3>
               <button
                 onClick={() => {
