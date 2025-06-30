@@ -68,7 +68,7 @@ function Dashboard() {
           <div className="discover">
             <h1>Discover the magic of AI tools</h1>
             <div className="discoverImages">
-              <Link to={"##"}>
+              <Link to={"/generate"}>
                 <img src="/media/d1.png" alt="" />
               </Link>
               <Link to={"##"}>
