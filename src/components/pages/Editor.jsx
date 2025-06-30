@@ -87,57 +87,63 @@ function Editor() {
   }, []);
 
   // Update layers when canvas objects change
-useEffect(() => {
-  if (!canvas) return;
+  useEffect(() => {
+    if (!canvas) return;
 
-  const updateLayers = () => {
-    const objects = canvas.getObjects();
-    const filtered = objects.filter((obj) => {
-      if (!obj.visible || obj.opacity === 0) return false;
-      if (obj.type === "group" && (!obj._objects || obj._objects.length === 0)) return false;
-      return true;
-    });
+    const updateLayers = () => {
+      const objects = canvas.getObjects();
+      const filtered = objects.filter((obj) => {
+        if (!obj.visible || obj.opacity === 0) return false;
+        if (
+          obj.type === "group" &&
+          (!obj._objects || obj._objects.length === 0)
+        )
+          return false;
+        return true;
+      });
 
-    const newLayers = filtered.map((obj, index) => ({
-      id: obj.id || `layer-${Date.now()}-${index}`,
-      name: obj.name || `Layer ${filtered.length - index}`,
-      visible: obj.visible !== false,
-      object: obj,
-      index: index,
-    }));
+      const newLayers = filtered.map((obj, index) => ({
+        id: obj.id || `layer-${Date.now()}-${index}`,
+        name: obj.name || `Layer ${filtered.length - index}`,
+        visible: obj.visible !== false,
+        object: obj,
+        index: index,
+      }));
 
-    setLayers(newLayers.reverse()); // Top layer first
-  };
+      setLayers(newLayers.reverse()); // Top layer first
+    };
 
-  const onPathCreated = () => {
-    saveCanvasState(canvas);
-  };
+    const onPathCreated = () => {
+      saveCanvasState(canvas);
+    };
 
-  const cleanEmptyGroups = (e) => {
-    const obj = e.target;
-    if (obj?.type === "group" && (!obj._objects || obj._objects.length === 0)) {
-      canvas.remove(obj);
-      canvas.requestRenderAll();
-    }
-  };
+    const cleanEmptyGroups = (e) => {
+      const obj = e.target;
+      if (
+        obj?.type === "group" &&
+        (!obj._objects || obj._objects.length === 0)
+      ) {
+        canvas.remove(obj);
+        canvas.requestRenderAll();
+      }
+    };
 
-  canvas.on("object:modified", cleanEmptyGroups);
-  canvas.on("object:added", updateLayers);
-  canvas.on("object:removed", updateLayers);
-  canvas.on("object:modified", updateLayers);
-  canvas.on("object:moved", updateLayers);
-  canvas.on("path:created", onPathCreated);
+    canvas.on("object:modified", cleanEmptyGroups);
+    canvas.on("object:added", updateLayers);
+    canvas.on("object:removed", updateLayers);
+    canvas.on("object:modified", updateLayers);
+    canvas.on("object:moved", updateLayers);
+    canvas.on("path:created", onPathCreated);
 
-  return () => {
-    canvas.off("object:modified", cleanEmptyGroups);
-    canvas.off("object:added", updateLayers);
-    canvas.off("object:removed", updateLayers);
-    canvas.off("object:modified", updateLayers);
-    canvas.off("object:moved", updateLayers);
-    canvas.off("path:created", onPathCreated);
-  };
-}, [canvas]);
-
+    return () => {
+      canvas.off("object:modified", cleanEmptyGroups);
+      canvas.off("object:added", updateLayers);
+      canvas.off("object:removed", updateLayers);
+      canvas.off("object:modified", updateLayers);
+      canvas.off("object:moved", updateLayers);
+      canvas.off("path:created", onPathCreated);
+    };
+  }, [canvas]);
 
   const saveCanvasState = (canvas) => {
     const state = JSON.stringify(canvas);
@@ -455,8 +461,8 @@ useEffect(() => {
     if (activeObject) {
       canvas.remove(activeObject);
       saveCanvasState(canvas);
-    }else{
-      toast.error('Select object to delete')
+    } else {
+      toast.error("Select object to delete");
     }
   };
 
@@ -844,6 +850,9 @@ useEffect(() => {
     setActiveButton((prev) => (prev === buttonName ? null : buttonName));
     if (activeTool === "fill") {
       setActiveTool(null);
+    }
+    if (activeTool === "erase") {
+      stopErasing();
     }
     if (buttonName === "Background") {
       setActiveTool(null);
