@@ -8,7 +8,7 @@ function WhatYouSearchFor({ data }) {
   return (
     <div className="bubbleInner">
       <Bubble position="top-right" />
-      <div className="box center">
+      <div className="center px0-20L">
         <div className="header">
           <span className="label">What you search for</span>
           <h2>

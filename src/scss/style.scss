@@ -329,11 +329,7 @@ nav {
     object-fit: contain;
   }
 }
-@media (max-width: 320px) {
-  .logo img {
-    width: 150px;
-  }
-}
+
 .links {
   display: flex;
   z-index: 1 !important;
@@ -738,7 +734,7 @@ nav {
     object-position: bottom;
     z-index: 1;
   }
-  .box {
+  .bx {
     display: flex;
     gap: 30px;
     justify-content: center;
@@ -749,8 +745,8 @@ nav {
     padding-bottom: 200px;
     padding-top: 200px;
     h1 {
-      max-width: 700px;
-      font-size: 3rem;
+      max-width: 600px;
+      font-size: 3.25rem;
       font-family: "Ahmad Hasani Fonts";
       word-spacing: 10px;
       color: #fff;
@@ -760,22 +756,33 @@ nav {
       }
     }
   }
+  .box {
+    display: flex;
+    align-items: stretch;
+    position: relative;
+  }
 }
 .heroImg {
   position: absolute;
-  bottom: 25px;
+  bottom: 30px;
   right: 0;
-  width: 700px;
+  width: 750px;
   z-index: 2;
+  object-fit: contain;
 }
-@media (max-width: 1300px) {
+@media (max-width: 1200px) {
+  .hero {
+    .box {
+      position: initial;
+    }
+  }
   .heroImg {
-    width: 50vw;
+    width: 60vw;
   }
 }
 @media (max-width: 1000px) {
   .hero {
-    .box {
+    .bx {
       align-items: center;
       h1 {
         max-width: 100%;
@@ -791,7 +798,7 @@ nav {
     bottom: 20px;
   }
   .hero {
-    .box {
+    .bx {
       padding-top: 200px;
       padding-bottom: 150px;
       h1 {
@@ -804,7 +811,7 @@ nav {
 }
 @media (max-width: 500px) {
   .hero {
-    .box {
+    .bx {
       h1 {
         font-size: 2rem;
       }
@@ -858,6 +865,7 @@ nav {
   @include flex();
   flex-direction: column;
   padding: 50px 20px;
+  width: 100%;
 }
 .bubbleInner {
   position: relative;
@@ -1045,12 +1053,19 @@ nav {
   align-items: center;
   padding: 24px 32px;
   gap: 16px;
+  height: 250px;
   width: 374px;
   background: linear-gradient(
     80.42deg,
-    rgba(0, 0, 0, 0.1) 25.25%,
-    rgba(83, 84, 108, 0.1) 98.05%
+    rgba(54, 51, 113, 0.4) 25.25%,
+    rgba(253, 245, 12, 0.4) 98.05%
   );
+  border-width: 0 0 3px 3px;
+
+  border-style: solid;
+
+  border-color: rgba(115, 111, 208, 0.5);
+
   @media (max-width: 850px) {
     width: 100%;
   }
@@ -1058,6 +1073,7 @@ nav {
   h2 {
     width: 100%;
     text-align: left;
+    text-transform: capitalize;
   }
   span {
     width: 100%;
@@ -3144,4 +3160,8 @@ footer {
     flex-direction: row-reverse;
     font-family: "Cairo", sans-serif;
   }
+}
+.px0-20L {
+  padding-left: 20px;
+  padding-right: 0;
 }

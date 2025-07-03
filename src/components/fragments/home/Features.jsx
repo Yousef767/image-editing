@@ -8,7 +8,7 @@ function Features({ data }) {
   return (
     <div className="bubbleInner">
       <Bubble position="top-right" />
-      <div className="box center">
+      <div className="center px0-20L">
         <div className="header">
           <span className="label">Main Features</span>
           <h2>
