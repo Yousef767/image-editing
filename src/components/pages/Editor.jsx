@@ -52,19 +52,6 @@ function Editor() {
   const history = useRef([]);
   const historyIndex = useRef(-1);
 
-  const [data, setData] = useState([]);
-  const fetchData = async () => {
-    try {
-      const res = await AxiosBG.get("/assets/backgrounds.json");
-      console.log(res.data);
-      setData(res.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  useEffect(() => {
-    fetchData();
-  }, []);
   useEffect(() => {
     setFilterValue(50);
   }, [activeTool]);

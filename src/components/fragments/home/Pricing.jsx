@@ -14,7 +14,6 @@ function Pricing() {
     const fetchData = async () => {
       try {
         const res = await AxiosInstance.get("/packages");
-        console.log(res.data.data);
         setData(res.data.data);
       } catch (error) {
         handleError(error);

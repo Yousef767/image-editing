@@ -75,7 +75,7 @@ function Navbar() {
     }
   }, [searchParams]);
 
-  const allowedPaths = ["/", "/about", "/faq", "/stocks", "/contact"];
+  const allowedPaths = ["/", "/categories", "/pricing", "/learn"];
   if (!allowedPaths.includes(pathname)) {
     return null;
   }
@@ -113,26 +113,18 @@ function Navbar() {
                   </Link>
                 </li>
                 <li>
-                  <Link to={`/about`} className={`link ${isActive("about")}`}>
-                    About
+                  <Link to={`/categories`} className={`link ${isActive("categories")}`}>
+                    Categories
                   </Link>
                 </li>
                 <li>
-                  <Link to={`/faq`} className={`link ${isActive("faq")}`}>
-                    FAQ
+                  <Link to={`/pricing`} className={`link ${isActive("pricing")}`}>
+                    Plan & pricing
                   </Link>
                 </li>
                 <li>
-                  <Link to={`/stocks`} className={`link ${isActive("stocks")}`}>
-                    Stocks
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to={`/contact`}
-                    className={`link ${isActive("contact")}`}
-                  >
-                    Contact
+                  <Link to={`/learn`} className={`link ${isActive("learn")}`}>
+                    Learn
                   </Link>
                 </li>
               </ul>

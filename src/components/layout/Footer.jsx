@@ -12,7 +12,6 @@ function Footer() {
     const fetchData = async () => {
       try {
         const res = await AxiosInstance.get("/settings");
-        console.log(res.data.data);
         setData(res.data.data);
       } catch (error) {
         handleError(error);
@@ -22,7 +21,7 @@ function Footer() {
   }, []);
 
   if (!data) return null;
-  const allowedPaths = ["/", "/about", "/faq", "/stocks", "/contact"];
+  const allowedPaths = ["/", "/categories", "/pricing", "/learn"];
   if (!allowedPaths.includes(pathname)) {
     return null;
   }
@@ -93,28 +92,26 @@ function Footer() {
             <h2 className="underline">Kitaba </h2>
             <ul className="footerLinks">
               <li>
-                <Link to={`/`} className={` ${isActive("/")}`}>
+                <Link to={`/`} className={`${isActive("/")}`}>
                   Home
                 </Link>
               </li>
               <li>
-                <Link to={`/about`} className={` ${isActive("about")}`}>
-                  About
+                <Link
+                  to={`/categories`}
+                  className={`${isActive("categories")}`}
+                >
+                  Categories
                 </Link>
               </li>
               <li>
-                <Link to={`/faq`} className={` ${isActive("faq")}`}>
-                  FAQ
+                <Link to={`/pricing`} className={`${isActive("pricing")}`}>
+                  Plan & pricing
                 </Link>
               </li>
               <li>
-                <Link to={`/stocks`} className={` ${isActive("stocks")}`}>
-                  Stocks
-                </Link>
-              </li>
-              <li>
-                <Link to={`/contact`} className={` ${isActive("contact")}`}>
-                  Contact
+                <Link to={`/learn`} className={`${isActive("learn")}`}>
+                  Learn
                 </Link>
               </li>
             </ul>

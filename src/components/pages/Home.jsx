@@ -14,7 +14,6 @@ function Home() {
     const fetchData = async () => {
       try {
         const res = await AxiosInstance.get("/home_data");
-        // console.log(res.data.data);
         setData(res.data.data);
       } catch (error) {
         handleError(error);

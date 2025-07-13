@@ -10,6 +10,8 @@ import ProtectedRoute from "./components/fragments/ProtectedRoute";
 import { ShowOptionProvider } from "./hooks/ShowOptionProvider";
 import GenerateImages from "./components/pages/GenerateImages";
 import Editor from "./components/pages/Editor";
+import AITools from "./components/pages/AITools";
+import Backgrounds from "./components/pages/Backgrounds";
 
 function App() {
   return (
@@ -33,6 +35,14 @@ function App() {
           <Route
             path="/editor"
             element={<ProtectedRoute component={Editor} />}
+          />
+          <Route
+            path="/ai-tools"
+            element={<ProtectedRoute component={AITools} />}
+          />
+          <Route
+            path="/backgrounds"
+            element={<ProtectedRoute component={Backgrounds} />}
           />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
