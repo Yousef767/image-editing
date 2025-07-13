@@ -289,8 +289,8 @@ nav {
 .goTop {
   display: none;
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  bottom: 15px;
+  right: 15px;
   z-index: 5;
   span {
     @include flex();
@@ -2001,7 +2001,7 @@ footer {
 .popUp {
   @include flex();
   width: 100%;
-  height: 100dvh;
+  height: 100vh;
   position: fixed;
   z-index: 50;
   background-color: #00000060;
@@ -3269,7 +3269,7 @@ footer {
     img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: fill;
     }
     h4 {
       position: absolute;
@@ -3325,10 +3325,18 @@ footer {
     }
   }
 }
-@media (max-width: 500px) {
+@media (max-width: 650px) {
   .bgbox {
     .bg {
       width: calc(100% / 2 - 15px);
+    }
+  }
+}
+@media (max-width: 500px) {
+  .bgbox {
+    .bg {
+      width: calc(100%);
+      height: 300px;
     }
   }
 }
@@ -3336,6 +3344,7 @@ footer {
   .bgbox {
     .bg {
       width: calc(100%);
+      height: 250px;
     }
   }
 }

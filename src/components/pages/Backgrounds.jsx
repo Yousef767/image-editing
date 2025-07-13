@@ -1,17 +1,18 @@
 import Aside from "../fragments/dashboard/Aside";
 import { useDashboardNav } from "../../hooks/DashboardNavHook";
 import { DashboardNav } from "../fragments/dashboard/DashboardNav";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AxiosBG } from "../../api/axios";
 import { handleError } from "../../api/error";
 import { useNavigate } from "react-router-dom";
 import Loader from "../fragments/Loader";
+import GoTop from "../fragments/GoTop";
 
 function Backgrounds() {
   const { active, handleActive, handleSearch } = useDashboardNav();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  
+
   const [category, setCategory] = useState({
     name: null,
     count: 0,
@@ -50,22 +51,55 @@ function Backgrounds() {
       setLoading(false);
     }, 500);
   };
+  const btnRef = useRef(null);
+  const containerRef = useRef(null);
 
+  const handleScroll = () => {
+    if (containerRef.current.scrollTop > 100) {
+      btnRef.current.classList.add("show");
+    } else {
+      btnRef.current.classList.remove("show");
+    }
+  };
+
+  useEffect(() => {
+    const container = containerRef.current;
+    container.addEventListener("scroll", handleScroll);
+    return () => {
+      container.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  const scrollToTop = () => {
+    containerRef.current.scrollTo({ top: 0, behavior: "smooth" });
+  };
   return (
     <div className={active ? "dashborad active" : "dashborad"}>
       <Aside />
-      <div className="container">
+      <button ref={btnRef} tabIndex={0} onClick={scrollToTop} className="goTop">
+        <span>
+          <i className="fa-regular fa-angle-up"></i>
+        </span>
+      </button>
+
+      <div className="container" ref={containerRef}>
         <DashboardNav handleActive={handleActive} handleSearch={handleSearch} />
         <div className="content">
           <div className="bgs">
             {!loading && <BackButton resetCategory={resetCategory} />}
 
             {loading ? (
-              <Loader/>
+              <Loader />
             ) : category.name === null ? (
               <div className="bgc">
                 <div className="pti">
-                  <h3>  {!loading && <BackButton resetCategory={resetCategory} />} Backgrounds</h3>
+                  <h3>
+                    {" "}
+                    {!loading && (
+                      <BackButton resetCategory={resetCategory} />
+                    )}{" "}
+                    Backgrounds
+                  </h3>
                   <span>
                     Home &gt; <span>Background</span>
                   </span>
@@ -92,7 +126,13 @@ function Backgrounds() {
             ) : (
               <div className="bgc">
                 <div className="pti">
-                  <h3>  {!loading && <BackButton resetCategory={resetCategory} />} {category.name}</h3>
+                  <h3>
+                    {" "}
+                    {!loading && (
+                      <BackButton resetCategory={resetCategory} />
+                    )}{" "}
+                    {category.name}
+                  </h3>
                   <span>
                     Home &gt; <span>Background</span> &gt;{" "}
                     <span>{category.name}</span>

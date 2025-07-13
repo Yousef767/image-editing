@@ -18,7 +18,7 @@ function GoTop() {
   return (
     <button
       ref={btnRef}
-      tabIndex={1}
+      tabIndex={0}
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
       className="goTop "
     >
