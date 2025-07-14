@@ -12,6 +12,7 @@ import GenerateImages from "./components/pages/GenerateImages";
 import Editor from "./components/pages/Editor";
 import AITools from "./components/pages/AITools";
 import Backgrounds from "./components/pages/Backgrounds";
+import UpScale from "./components/pages/UpScale";
 
 function App() {
   return (
@@ -43,6 +44,10 @@ function App() {
           <Route
             path="/backgrounds"
             element={<ProtectedRoute component={Backgrounds} />}
+          />
+          <Route
+            path="/up-scale"
+            element={<ProtectedRoute component={UpScale} />}
           />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>

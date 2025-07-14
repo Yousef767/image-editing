@@ -2635,14 +2635,16 @@ footer {
   width: 100%;
   display: flex;
   gap: 15px;
+  flex-wrap: wrap;
   justify-content: center;
   img {
-    width: calc(100% / 4 - 10px);
+    width: calc(100% / 4 - 20px);
     height: 200px;
     object-fit: cover;
     margin: 0 auto;
     border-radius: 5px;
     box-shadow: 0px 3px 6.2px 0px rgba(64, 57, 11, 0.2);
+    cursor: pointer;
     @media (max-width: 999px) {
       width: calc(100% / 2 - 10px);
     }
@@ -2659,8 +2661,10 @@ footer {
   }
 }
 .recent-generates {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
   p {
-    padding: 10px 0;
     color: $purple;
     font-weight: 400;
   }
@@ -3298,7 +3302,6 @@ footer {
     gap: 0;
     .back {
       display: none;
-      
     }
   }
   .bgbox {
@@ -3354,4 +3357,52 @@ footer {
   padding-top: 100px;
   padding-bottom: 100px;
   @include flex();
+}
+.imgInput {
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: calc(100% - 450px);
+  h1 {
+    text-align: left;
+    font-size: 2.5rem;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+  label {
+    width: 100%;
+    @include flex();
+    flex-direction: column;
+    border-radius: 10px;
+    padding: 50px 20px;
+    font-size: .9rem;
+    border: 1px solid rgba(130, 130, 130, 1);
+    background-color: #fff;
+    position: relative;
+    cursor: pointer;
+    font-weight: 400;
+    &::after {
+      content: "";
+      width:  calc(100% - 28px);
+      height: calc(100% - 30px);
+      border-radius: inherit;
+      border: 1px dashed rgba(130, 130, 130, 1);
+      position: absolute;
+    }
+    span {
+      display: block;
+      color: rgba(130, 130, 130, 1);
+      padding-top: 5px;
+    }
+  }
+}
+.pb20{
+  padding-bottom: 20px !important;
+}
+.flexcenter50{
+  display: flex;
+  align-items: flex-start;
+  gap: 50px;
+  img{
+    width: 400px;
+  }
 }

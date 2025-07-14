@@ -3,6 +3,7 @@ import Aside from "../fragments/dashboard/Aside";
 import { useDashboardNav } from "../../hooks/DashboardNavHook";
 import { DashboardNav } from "../fragments/dashboard/DashboardNav";
 import { useState } from "react";
+import AlsoLinks from "../fragments/ai/AlsoLinks";
 const aspectRatios = [
   "1:1",
   "3:4",
@@ -96,15 +97,7 @@ function GenerateImages() {
         <DashboardNav handleActive={handleActive} handleSearch={handleSearch} />
         <div className="content">
           <div className="igContent">
-            <div className="also">
-              <h3>Also you can check</h3>
-              <Link to={"##"}>
-                <img src="/media/d22.png" alt="" />
-              </Link>
-              <Link to={"##"}>
-                <img src="/media/d33.png" alt="" />
-              </Link>
-            </div>
+            <AlsoLinks/>
             <div className="otherContent">
               <div className="generateInput">
                 <h1>What will you design today?</h1>
