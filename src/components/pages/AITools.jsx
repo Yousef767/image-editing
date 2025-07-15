@@ -21,10 +21,10 @@ function AITools() {
               <Link to={"/generate"}>
                 <img src="/media/d1.png" alt="" />
               </Link>
-              <Link to={"##"}>
+              <Link to={"/bg-remover"}>
                 <img src="/media/d2.png" alt="" />
               </Link>
-              <Link to={"##"}>
+              <Link to={"/up-scale"}>
                 <img src="/media/d3.png" alt="" />
               </Link>
             </div>
