@@ -1,89 +1,129 @@
 import { Link } from "react-router-dom";
-import axios from "axios";
-import { jwtDecode } from 'jwt-decode';
+import { useState, useEffect } from "react";
+import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
 import { AxiosInstance } from "../../../api/axios";
 
 function AuthOptions({ setOption }) {
+  const [loading, setLoading] = useState({
+    google: false,
+    facebook: false,
+    twitter: false,
+  });
+  const navigate = useNavigate();
+  let tokenClient = null;
 
-  const handleGoogleLogin = () => {
-    const script = document.createElement('script');
-    script.src = 'https://accounts.google.com/gsi/client';
-    script.async = true;
-    script.defer = true;
-    script.onload = () => {
-      window.google.accounts.id.initialize({
-        client_id: '505144242697-jdbtuigd972ou91rio07k4hilqdgj28v.apps.googleusercontent.com',
-        callback: handleGoogleResponse
-      });
-      window.google.accounts.id.prompt();
-    };
-    document.body.appendChild(script);
-  };
-
-  const handleGoogleResponse = async (response) => {
-    try {
-      const decoded = jwtDecode(response.credential);  // Updated usage
-      const { data } = await AxiosInstance.post('/login-social', {
-        provider: 'google',
-        token: response.credential,
-        email: decoded.email,
-        name: decoded.name
-      });
-      console.log('Google login success', data);
-    } catch (error) {
-      console.error('Google login failed', error);
-    }
-  };
-
-
-  // Facebook Login Handler
-  const handleFacebookLogin = () => {
-    // Load Facebook SDK dynamically
-    const script = document.createElement("script");
-    script.src = "https://connect.facebook.net/en_US/sdk.js";
-    script.async = true;
-    script.defer = true;
-    script.onload = () => {
-      window.FB.init({
-        appId: "1460753841607323",
-        cookie: true,
-        xfbml: true,
-        version: "v19.0",
-      });
-      window.FB.login(
-        (response) => {
-          if (response.authResponse) {
-            handleFacebookResponse(response.authResponse);
+  // Initialize Google OAuth client
+  useEffect(() => {
+    if (window.google) {
+      tokenClient = window.google.accounts.oauth2.initTokenClient({
+        client_id:
+          "505144242697-jdbtuigd972ou91rio07k4hilqdgj28v.apps.googleusercontent.com",
+        scope:
+          "openid profile email https://www.googleapis.com/auth/userinfo.email",
+        callback: async (tokenResponse) => {
+          const accessToken = tokenResponse.access_token;
+          if (accessToken) {
+            await handleSocialLogin(accessToken, "google");
           }
         },
-        { scope: "public_profile,email" }
-      );
-    };
-    document.body.appendChild(script);
-  };
-
-  const handleFacebookResponse = async (response) => {
-    try {
-      const { data } = await AxiosInstance.post("/login-social", {
-        provider: "facebook",
-        token: response.accessToken,
-        userId: response.userID,
       });
-      console.log("Facebook login success", data);
+    }
+  }, []);
+
+  // Initialize Facebook SDK
+  useEffect(() => {
+    if (!window.FB) {
+      window.fbAsyncInit = function () {
+        window.FB.init({
+          appId: "1460753841607323",
+          cookie: true,
+          xfbml: true,
+          version: "v19.0",
+        });
+      };
+
+      const script = document.createElement("script");
+      script.src = "https://connect.facebook.net/en_US/sdk.js";
+      script.async = true;
+      script.defer = true;
+      document.body.appendChild(script);
+    }
+  }, []);
+
+  const handleSocialLogin = async (token, provider) => {
+    setLoading((prev) => ({ ...prev, [provider]: true }));
+    try {
+      const res = await AxiosInstance.post("/login-social", {
+        provider,
+        token,
+      });
+
+      Cookies.set("token", res.data.token);
+      Cookies.set("username", res.data.name);
+      navigate("/");
     } catch (error) {
-      console.error("Facebook login failed", error);
+      console.error(
+        `${provider} login failed`,
+        error.response?.data || error.message
+      );
+    } finally {
+      setLoading((prev) => ({ ...prev, [provider]: false }));
     }
   };
 
-  // Twitter Login Handler
+  const handleGoogleLogin = () => {
+    tokenClient?.requestAccessToken();
+  };
+
+  const handleFacebookLogin = () => {
+    window.FB.login(
+      (response) => {
+        if (response.authResponse) {
+          handleSocialLogin(response.authResponse.accessToken, "facebook");
+        }
+      },
+      { scope: "public_profile,email" }
+    );
+  };
+
   const handleTwitterLogin = () => {
-    // Twitter requires OAuth 1.0a flow which is more complex
-    // This is a simplified approach - in production you'd need a backend endpoint
-    // to initiate the Twitter OAuth flow
     window.open(
       `/auth/twitter?redirect=${encodeURIComponent(window.location.href)}`,
-      "_blank"
+      "_self"
     );
+  };
+
+  // Handle Twitter callback
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const oauthToken = params.get("oauth_token");
+    const oauthVerifier = params.get("oauth_verifier");
+
+    if (oauthToken && oauthVerifier) {
+      handleTwitterCallback(oauthToken, oauthVerifier);
+    }
+  }, []);
+
+  const handleTwitterCallback = async (oauthToken, oauthVerifier) => {
+    setLoading((prev) => ({ ...prev, twitter: true }));
+    try {
+      const res = await AxiosInstance.post("/auth/twitter/callback", {
+        oauth_token: oauthToken,
+        oauth_verifier: oauthVerifier,
+      });
+
+      Cookies.set("token", res.data.token);
+      Cookies.set("username", res.data.name);
+      navigate("/");
+    } catch (error) {
+      console.error(
+        "Twitter login failed",
+        error.response?.data || error.message
+      );
+    } finally {
+      setLoading((prev) => ({ ...prev, twitter: false }));
+    }
   };
 
   return (
@@ -96,15 +136,17 @@ function AuthOptions({ setOption }) {
         <p>Use your email or other service to continue with us</p>
         <div className="socialBtns">
           {/* Google Button */}
-          <button onClick={handleGoogleLogin}>
+          <button onClick={handleGoogleLogin} disabled={loading.google}>
             <img src="/media/social-icons/google.svg" alt="Google" />
             Continue with Google
+            {loading.google && <span className="loader"></span>}
           </button>
 
           {/* Facebook Button */}
-          <button onClick={handleFacebookLogin}>
+          <button onClick={handleFacebookLogin} disabled={loading.facebook}>
             <img src="/media/social-icons/facebook.svg" alt="Facebook" />
             Continue with Facebook
+            {loading.facebook && <span className="loader"></span>}
           </button>
 
           {/* Apple Button */}
@@ -114,9 +156,10 @@ function AuthOptions({ setOption }) {
           </button>
 
           {/* Twitter Button */}
-          <button onClick={handleTwitterLogin}>
+          <button onClick={handleTwitterLogin} disabled={loading.twitter}>
             <img src="/media/social-icons/twitter.svg" alt="Twitter" />
             Continue with Twitter
+            {loading.twitter && <span className="loader"></span>}
           </button>
 
           {/* Email Button */}
