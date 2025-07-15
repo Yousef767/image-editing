@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { jwtDecode } from 'jwt-decode';
+import { AxiosInstance } from "../../../api/axios";
 
 function AuthOptions({ setOption }) {
 
@@ -22,7 +23,7 @@ function AuthOptions({ setOption }) {
   const handleGoogleResponse = async (response) => {
     try {
       const decoded = jwtDecode(response.credential);  // Updated usage
-      const { data } = await axios.post('/login-social', {
+      const { data } = await AxiosInstance.post('/login-social', {
         provider: 'google',
         token: response.credential,
         email: decoded.email,
@@ -63,7 +64,7 @@ function AuthOptions({ setOption }) {
 
   const handleFacebookResponse = async (response) => {
     try {
-      const { data } = await axios.post("/login-social", {
+      const { data } = await AxiosInstance.post("/login-social", {
         provider: "facebook",
         token: response.accessToken,
         userId: response.userID,
