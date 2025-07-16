@@ -31,34 +31,64 @@ function AuthOptions({ setOption }) {
     }
   }, []);
 
-  // Initialize Facebook SDK
   useEffect(() => {
-    if (!window.FB) {
-      window.fbAsyncInit = function () {
+    if (!window.fbAsyncInit) {
+      window.fbAsyncInit = function() {
         window.FB.init({
-          appId: "1460753841607323",
+          appId: '1460753841607323',
           cookie: true,
           xfbml: true,
-          version: "v19.0", // تأكد من تحديد نسخة صحيحة
+          version: 'v19.0', // Must be a valid version string
+          autoLogAppEvents: true
         });
-
-        // هذا السطر مهم للتأكد من التهيئة
-        window.FB.AppEvents.logPageView();
+        console.log('Facebook SDK initialized');
       };
 
-      (function (d, s, id) {
-        var js,
-          fjs = d.getElementsByTagName(s)[0];
-        if (d.getElementById(id)) {
-          return;
-        }
-        js = d.createElement(s);
-        js.id = id;
+      // Load SDK Asynchronously
+      (function(d, s, id){
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) return;
+        js = d.createElement(s); js.id = id;
         js.src = "https://connect.facebook.net/en_US/sdk.js";
+        js.onerror = () => console.error('Failed to load Facebook SDK');
         fjs.parentNode.insertBefore(js, fjs);
-      })(document, "script", "facebook-jssdk");
+      }(document, 'script', 'facebook-jssdk'));
     }
+
+    return () => {
+      // Cleanup
+      delete window.fbAsyncInit;
+      delete window.FB;
+    };
   }, []);
+
+  // 2. Proper Facebook Login Handler
+  const handleFacebookLogin = () => {
+    if (!window.FB) {
+      console.error('Facebook SDK not loaded yet');
+      return;
+    }
+
+    window.FB.getLoginStatus(response => {
+      console.log('Current login status:', response);
+      
+      window.FB.login(
+        loginResponse => {
+          if (loginResponse.authResponse) {
+            console.log('Welcome! Fetching your information....');
+            window.FB.api('/me', {fields: 'name,email'}, userResponse => {
+              console.log('Good to see you, ' + userResponse.name);
+              // Send to your backend
+              handleSocialLogin(loginResponse.authResponse.accessToken, 'facebook');
+            });
+          } else {
+            console.log('User cancelled login or did not fully authorize.');
+          }
+        },
+        {scope: 'public_profile,email'}
+      );
+    });
+  };
 
   const handleSocialLogin = async (token, provider) => {
     setLoading((prev) => ({ ...prev, [provider]: true }));
@@ -85,31 +115,11 @@ function AuthOptions({ setOption }) {
     tokenClient?.requestAccessToken();
   };
 
-  const handleFacebookLogin = () => {
-    if (!window.FB) {
-      console.error("Facebook SDK not loaded");
-      return;
-    }
-
-    window.FB.login(
-      (response) => {
-        if (response.authResponse) {
-          handleSocialLogin(response.authResponse.accessToken, "facebook");
-        } else {
-          console.error("User cancelled login or did not fully authorize.");
-        }
-      },
-      {
-        scope: "public_profile,email",
-        return_scopes: true,
-      }
-    );
-  };
 
   const handleTwitterLogin = () => {
     window.open(
       `/auth/twitter?redirect=${encodeURIComponent(window.location.href)}`,
-      "_self"
+      "_blank"
     );
   };
 
