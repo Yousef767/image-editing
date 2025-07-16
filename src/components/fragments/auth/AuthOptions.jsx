@@ -32,29 +32,33 @@ function AuthOptions({ setOption }) {
   }, []);
 
   // Initialize Facebook SDK
-useEffect(() => {
-  if (!window.FB) {
-    window.fbAsyncInit = function() {
-      window.FB.init({
-        appId: '1460753841607323',
-        cookie: true,
-        xfbml: true,
-        version: 'v19.0' // تأكد من تحديد نسخة صحيحة
-      });
-      
-      // هذا السطر مهم للتأكد من التهيئة
-      window.FB.AppEvents.logPageView(); 
-    };
+  useEffect(() => {
+    if (!window.FB) {
+      window.fbAsyncInit = function () {
+        window.FB.init({
+          appId: "1460753841607323",
+          cookie: true,
+          xfbml: true,
+          version: "v19.0", // تأكد من تحديد نسخة صحيحة
+        });
 
-    (function(d, s, id){
-      var js, fjs = d.getElementsByTagName(s)[0];
-      if (d.getElementById(id)) { return; }
-      js = d.createElement(s); js.id = id;
-      js.src = "https://connect.facebook.net/en_US/sdk.js";
-      fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));
-  }
-}, []);
+        // هذا السطر مهم للتأكد من التهيئة
+        window.FB.AppEvents.logPageView();
+      };
+
+      (function (d, s, id) {
+        var js,
+          fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) {
+          return;
+        }
+        js = d.createElement(s);
+        js.id = id;
+        js.src = "https://connect.facebook.net/en_US/sdk.js";
+        fjs.parentNode.insertBefore(js, fjs);
+      })(document, "script", "facebook-jssdk");
+    }
+  }, []);
 
   const handleSocialLogin = async (token, provider) => {
     setLoading((prev) => ({ ...prev, [provider]: true }));
@@ -82,13 +86,23 @@ useEffect(() => {
   };
 
   const handleFacebookLogin = () => {
+    if (!window.FB) {
+      console.error("Facebook SDK not loaded");
+      return;
+    }
+
     window.FB.login(
       (response) => {
         if (response.authResponse) {
           handleSocialLogin(response.authResponse.accessToken, "facebook");
+        } else {
+          console.error("User cancelled login or did not fully authorize.");
         }
       },
-      { scope: "public_profile,email" }
+      {
+        scope: "public_profile,email",
+        return_scopes: true,
+      }
     );
   };
 
