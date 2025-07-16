@@ -32,24 +32,29 @@ function AuthOptions({ setOption }) {
   }, []);
 
   // Initialize Facebook SDK
-  useEffect(() => {
-    if (!window.FB) {
-      window.fbAsyncInit = function () {
-        window.FB.init({
-          appId: "1460753841607323",
-          cookie: true,
-          xfbml: true,
-          version: "v19.0",
-        });
-      };
+useEffect(() => {
+  if (!window.FB) {
+    window.fbAsyncInit = function() {
+      window.FB.init({
+        appId: '1460753841607323',
+        cookie: true,
+        xfbml: true,
+        version: 'v19.0' // تأكد من تحديد نسخة صحيحة
+      });
+      
+      // هذا السطر مهم للتأكد من التهيئة
+      window.FB.AppEvents.logPageView(); 
+    };
 
-      const script = document.createElement("script");
-      script.src = "https://connect.facebook.net/en_US/sdk.js";
-      script.async = true;
-      script.defer = true;
-      document.body.appendChild(script);
-    }
-  }, []);
+    (function(d, s, id){
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) { return; }
+      js = d.createElement(s); js.id = id;
+      js.src = "https://connect.facebook.net/en_US/sdk.js";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+  }
+}, []);
 
   const handleSocialLogin = async (token, provider) => {
     setLoading((prev) => ({ ...prev, [provider]: true }));
